@@ -1,2 +1,2 @@
-# Devices
-Devices such as GPIO, I2C, UART
+# Core.Device
+Core Device Libraries
