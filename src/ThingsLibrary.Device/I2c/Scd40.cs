@@ -40,22 +40,33 @@ namespace ThingsLibrary.Device.I2c
 
         public override void Init()
         {
-            base.Init();
+            try
+            {
+                base.Init();
 
-            _device = new Scd4x(this.I2cDevice);
-            
-            this.MinReadInterval = (int)Scd4x.MeasurementPeriod.TotalMilliseconds;
-            if (this.ReadInterval < this.MinReadInterval) { throw new ArgumentException($"Read interval '{this.ReadInterval} ms' can not be less then min read interval '{this.MinReadInterval} ms' of sensor."); }
+                _device = new Scd4x(this.I2cDevice);
 
-            this.IsEnabled = true;
+                this.MinReadInterval = (int)Scd4x.MeasurementPeriod.TotalMilliseconds;
+                if (this.ReadInterval < this.MinReadInterval)
+                {
+                    this.ReadInterval = this.MinReadInterval;
+                    //throw new ArgumentException($"Read interval '{this.ReadInterval} ms' can not be less then min read interval '{this.MinReadInterval} ms' of sensor."); }
+                }
+
+                this.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                this.ErrorMessage = ex.Message;
+            }
         }
 
-        public async override Task<bool> FetchState()
+        public override bool FetchState()
         {
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var readResult = await _device.ReadPeriodicMeasurementAsync();
+            var readResult = _device.ReadPeriodicMeasurement();
             
             var updatedOn = DateTime.UtcNow;
             var isStateChanged = false;

@@ -58,10 +58,13 @@
             }
         }
         private DateTime _updatedOn;
+        
         /// <summary>
         /// If the output should be in metric units
         /// </summary>
         public bool IsMetric { get; set; }
+
+        public string ErrorMessage { get; set; }
 
         public override string ToString() => String.Join(", ", this.States.Values.Select(x => x.ToString()));
        
@@ -81,7 +84,7 @@
             }
         }
 
-        public abstract Task<bool> FetchState();
+        public abstract bool FetchState();
 
         /// <summary>
         /// Figure out when the next read event should happen

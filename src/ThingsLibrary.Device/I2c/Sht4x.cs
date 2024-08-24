@@ -1,6 +1,4 @@
 ﻿using Iot.Device.Sht4x;
-using ThingsLibrary.Device.Sensor;
-using ThingsLibrary.Device.Sensor.State;
 
 // https://docs.microsoft.com/en-us/dotnet/iot/tutorials/temp-sensor
 // https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout
@@ -33,22 +31,29 @@ namespace ThingsLibrary.Device.I2c
 
         public override void Init()
         {
-            base.Init();
+            try
+            {
+                base.Init();
 
-            _device = new Sht4x(this.I2cDevice);
+                _device = new Sht4x(this.I2cDevice);
 
-            //this.MinReadInterval = _device.GetMeasurementDuration();
+                //this.MinReadInterval = _device.GetMeasurementDuration();
 
-            // we must enable for this device to work at all.
-            this.IsEnabled = true;
+                // we must enable for this device to work at all.
+                this.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                this.ErrorMessage = ex.Message;
+            }
         }
 
-        public async override Task<bool> FetchState()
+        public override bool FetchState()
         {
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var (humidity, temp) = await _device.ReadHumidityAndTemperatureAsync();
+            var (humidity, temp) = _device.ReadHumidityAndTemperature();
             if (humidity is null || temp is null) { return false; }
 
             var updatedOn = DateTime.UtcNow;

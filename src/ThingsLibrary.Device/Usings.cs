@@ -25,3 +25,4 @@ global using NCrontab;
 // LOCAL
 // ======================================================================
 global using ThingsLibrary.Device.Sensor;
+global using ThingsLibrary.Device.Sensor.State;

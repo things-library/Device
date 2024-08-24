@@ -42,28 +42,35 @@ namespace ThingsLibrary.Device.I2c
 
         public override void Init()
         {
-            base.Init();
-        
-            _device = new Bme680(this.I2cDevice);
-            _device.TemperatureSampling = Sampling.Standard;
-            _device.HumiditySampling = Sampling.Standard;
-            _device.PressureSampling = Sampling.Standard;
-            
-            //_device.FilterMode = Bmx280FilteringMode.X16;
-            //_device.StandbyTime = StandbyTime.Ms1000;
+            try
+            {
+                base.Init();
 
-            //this.MinReadInterval = _device.GetMeasurementDuration();
-            
-            // we must enable for this device to work at all.
-            this.IsEnabled = true;
+                _device = new Bme680(this.I2cDevice);
+                _device.TemperatureSampling = Sampling.Standard;
+                _device.HumiditySampling = Sampling.Standard;
+                _device.PressureSampling = Sampling.Standard;
+
+                //_device.FilterMode = Bmx280FilteringMode.X16;
+                //_device.StandbyTime = StandbyTime.Ms1000;
+
+                //this.MinReadInterval = _device.GetMeasurementDuration();
+
+                // we must enable for this device to work at all.
+                this.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                this.ErrorMessage = ex.Message;
+            }
         }
 
-        public async override Task<bool> FetchState()
+        public override bool FetchState()
         {
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
             
-            var readResult = await _device.ReadAsync();
+            var readResult = _device.Read();
             if (readResult == null) { return false; }
 
             var updatedOn = DateTime.UtcNow;

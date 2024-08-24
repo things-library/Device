@@ -15,6 +15,7 @@
     <PackageReference Include="Iot.Device.Bindings" Version="3.2.0" />
     <PackageReference Include="NCrontab.Signed" Version="3.3.3" />
     <PackageReference Include="System.Device.Gpio" Version="3.2.0" />
+    <PackageReference Include="ThingsLibrary.Base" Version="0.0.7" />
   </ItemGroup>
 
 </Project>
