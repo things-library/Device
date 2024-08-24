@@ -1,10 +1,4 @@
-﻿using Iot.Device.Board;
-
-using NCrontab;
-using ThingsLibrary.Device.Sensor;
-using System.Linq;
-
-namespace ThingsLibrary.Device.I2c.Base
+﻿namespace ThingsLibrary.Device.I2c.Base
 {
     public abstract class I2cSensor : I2cBase
     {
