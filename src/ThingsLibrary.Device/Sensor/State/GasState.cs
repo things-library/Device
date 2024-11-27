@@ -14,10 +14,8 @@
             this.UpdatedOn = updatedOn;
         }
 
-        public GasState(string id = "Gas", bool isImperial = false)
+        public GasState(string id = "Gas", string key = "g", bool isImperial = false) : base(id, key, isImperial)
         {
-            this.Id = id;
-            this.IsImperial = isImperial;
             this.UnitSymbol = (this.IsImperial ? "in" : "mb");
         }
     }

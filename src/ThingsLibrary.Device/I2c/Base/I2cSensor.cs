@@ -27,19 +27,7 @@
         /// Read Interval (in miliseconds)
         /// </summary>
         public int ReadInterval { get; set; }
-
-        /// <summary>
-        /// Read Schedule (CRON)
-        /// </summary>
-        /// <example>*/15 * * * * = every 15th minute</example>
-        /// <remarks><see href="https://crontab.guru/" /></remarks>
-        public string ReadSchedule { get; set; }
-
-        /// <summary>
-        /// Library for CRON scheduling
-        /// </summary>
-        public CrontabSchedule ReadScheduler { get; set; }
-
+                       
         /// <summary>
         /// Next time the sensor should be read
         /// </summary>
@@ -62,26 +50,20 @@
         /// <summary>
         /// If the output should be in metric units
         /// </summary>
-        public bool IsMetric { get; set; }
+        public bool IsImperial { get; internal set; }
 
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; internal set; }
 
         public override string ToString() => String.Join(", ", this.States.Values.Select(x => x.ToString()));
        
-        protected I2cSensor(I2cBus i2cBus, int id, string name, bool isMetric) : base(i2cBus, id, name)
+        protected I2cSensor(I2cBus i2cBus, int id, string name, bool isImperial) : base(i2cBus, id, name)
         {
-            this.IsMetric = isMetric;
+            this.IsImperial = isImperial;
         }
 
         public override void Init()
         {
-            base.Init();
-            
-            // if there is a cron schedule parse it and have it ready to use.
-            if (!string.IsNullOrEmpty(this.ReadSchedule))
-            {
-                this.ReadScheduler = CrontabSchedule.Parse(this.ReadSchedule);
-            }
+            base.Init();            
         }
 
         public abstract bool FetchState();
@@ -91,14 +73,7 @@
         /// </summary>
         private void ScheduleNextRead()
         {
-            if (this.ReadScheduler != null)
-            {
-                this.NextReadOn = this.ReadScheduler.GetNextOccurrence(DateTime.UtcNow);
-            }
-            else
-            {                
-                this.NextReadOn = DateTime.UtcNow.AddMilliseconds(this.ReadInterval);
-            }
+            this.NextReadOn = DateTime.UtcNow.AddMilliseconds(this.ReadInterval);
         }
     }
 }

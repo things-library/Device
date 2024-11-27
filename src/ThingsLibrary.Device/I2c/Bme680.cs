@@ -14,7 +14,7 @@ namespace ThingsLibrary.Device.I2c
         public TemperatureState TemperatureState { get; init; }
         public HumidityState HumidityState { get; init; }
         public PressureState PressureState { get; init; }
-        public AltitudeState AltitudeState { get; init; }
+        public LengthState AltitudeState { get; init; }
         public GasState GasState { get; init; }
 
         /// <inheritdoc/>
@@ -24,11 +24,11 @@ namespace ThingsLibrary.Device.I2c
             this.MinReadInterval = 7; //157hz = 6.37ms
 
             // States
-            this.TemperatureState = new TemperatureState(id: "T", isImperial: isImperial);
-            this.HumidityState = new HumidityState(id: "H", isImperial: isImperial);
-            this.PressureState = new PressureState(id: "P", isImperial: isImperial);
-            this.AltitudeState = new AltitudeState(id: "A", isImperial: isImperial);
-            this.GasState = new GasState(id: "G", isImperial: isImperial);
+            this.TemperatureState = new TemperatureState(isImperial: isImperial);
+            this.HumidityState = new HumidityState(isImperial: isImperial);
+            this.PressureState = new PressureState(isImperial: isImperial);
+            this.AltitudeState = new LengthState(id: "Altitude", key: "alt", isImperial: isImperial);
+            this.GasState = new GasState(isImperial: isImperial);
 
             this.States = new Dictionary<string, ISensorState>()
             {

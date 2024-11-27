@@ -12,10 +12,8 @@
             this.UpdatedOn = updatedOn;
         }
 
-        public AqiState(string id = "AQI", bool isImperial = false)
+        public AqiState(string id = "AQI", string key = "aqi", bool isImperial = false) : base(id, key, isImperial)
         {
-            this.Id = id;
-            this.IsImperial = isImperial;
             //this.UnitSymbol = (isMetric ? "F" : "C");
 
             throw new NotImplementedException();

@@ -11,6 +11,11 @@
         public string Id { get; init; }
 
         /// <summary>
+        /// Key
+        /// </summary>
+        public string Key { get; init; }
+
+        /// <summary>
         /// Output Imperial Values?
         /// </summary>
         public bool IsImperial { get; init; }

@@ -8,6 +8,9 @@
         /// <inheritdoc />
         public string Id { get; init; }
 
+        /// <inheritdoc />
+        public string Key { get; init; }
+
         /// <inheritdoc />        
         public bool IsImperial { get; init; }
         
@@ -28,6 +31,14 @@
         public abstract string ValueString();
 
 
-        public override string ToString() => this.ValueString();        
+        public override string ToString() => this.ValueString();
+
+
+        public SensorState(string id, string key, bool isImperical)
+        {
+            this.Id = id;
+            this.Key = key;
+            this.IsImperial = isImperical;
+        }
     }
 }

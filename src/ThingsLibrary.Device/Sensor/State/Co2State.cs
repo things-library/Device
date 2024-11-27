@@ -14,10 +14,8 @@
             this.UpdatedOn = updatedOn;
         }
 
-        public Co2State(string id = "CO2", bool isImperial = false)
+        public Co2State(string id = "CO2", string key = "c", bool isImperial = false) : base(id, key, isImperial)
         {
-            this.Id = id;
-            this.IsImperial = isImperial;
             this.UnitSymbol = "ppm";
         }
     }

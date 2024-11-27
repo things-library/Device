@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,9 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Iot.Device.Bindings" Version="3.2.0" />
-    <PackageReference Include="NCrontab.Signed" Version="3.3.3" />
     <PackageReference Include="System.Device.Gpio" Version="3.2.0" />
-    <PackageReference Include="ThingsLibrary.Base" Version="0.0.7" />
+    <PackageReference Include="ThingsLibrary.Base" Version="0.1.4" />
   </ItemGroup>
 
 </Project>

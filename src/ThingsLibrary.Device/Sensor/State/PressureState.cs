@@ -14,11 +14,9 @@
             this.UpdatedOn = updatedOn;
         }
 
-        public PressureState(string id = "Pressure", bool isImperial = false)
+        public PressureState(string id = "Pressure", string key = "p", bool isImperial = false) : base(id, key, isImperial)
         {
-            this.Id = id;
-            this.IsImperial = isImperial;
-            this.UnitSymbol = (this.IsImperial ? "in" : "mb");
+            this.UnitSymbol = (this.IsImperial ? "inHg" : "mb");
         }
     }
 }

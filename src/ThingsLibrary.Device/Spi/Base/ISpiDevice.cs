@@ -1,6 +1,4 @@
-﻿using System.Device.Spi;
-
-namespace ThingsLibrary.Device.Spi.Base
+﻿namespace ThingsLibrary.Device.Spi.Base
 {
     /// <summary>
     /// SPI Device Interface

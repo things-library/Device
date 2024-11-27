@@ -1,6 +1,4 @@
 ﻿using Iot.Device.Scd4x;
-using ThingsLibrary.Device.Sensor;
-using ThingsLibrary.Device.Sensor.State;
 
 namespace ThingsLibrary.Device.I2c
 {
@@ -25,8 +23,8 @@ namespace ThingsLibrary.Device.I2c
             this.TemperatureState = new TemperatureState(isImperial: isImperial);
             this.HumidityState = new HumidityState(isImperial: isImperial);
 
-            this.HeatIndexState = new TemperatureState("Heat Index", isImperial: isImperial);
-            this.DewPointState = new TemperatureState("Dew Point", isImperial: isImperial);
+            this.HeatIndexState = new TemperatureState("Heat Index", "heat", isImperial: isImperial);
+            this.DewPointState = new TemperatureState("Dew Point", "dew", isImperial: isImperial);
             
             this.States = new Dictionary<string, ISensorState>()
             {

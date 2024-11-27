@@ -1,6 +1,4 @@
-﻿using Iot.Device.Card.CreditCardProcessing;
-using Iot.Device.Ws28xx;
-using System.CodeDom;
+﻿using Iot.Device.Ws28xx;
 using System.Drawing;
 using System.Threading;
 

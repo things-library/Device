@@ -14,11 +14,9 @@
             this.UpdatedOn = updatedOn;
         }
 
-        public TemperatureState(string id = "Temperature", bool isImperial = false)
+        public TemperatureState(string id = "Temperature", string key = "t", bool isImperial = false) : base(id, key, isImperial)
         {
-            this.Id = id;
-            this.IsImperial = isImperial;
-            this.UnitSymbol = (isImperial ? "F" : "C");
+            this.UnitSymbol = (this.IsImperial ? "F" : "C");
         }
     }
 }

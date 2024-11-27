@@ -14,10 +14,8 @@
             this.UpdatedOn = updatedOn;
         }
 
-        public HumidityState(string id = "Humidity", bool isImperial = false)
+        public HumidityState(string id = "Humidity", string key = "h", bool isImperial = false) : base(id, key, isImperial)
         {
-            this.Id = id;
-            this.IsImperial = isImperial;
             this.UnitSymbol = "%";
         }
     }

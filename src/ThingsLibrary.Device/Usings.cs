@@ -19,7 +19,6 @@ global using Iot.Device.Board;
 // THIRD PARTY
 // ======================================================================
 global using UnitsNet;
-global using NCrontab;
 
 // ======================================================================
 // LOCAL

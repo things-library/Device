@@ -12,7 +12,7 @@ namespace ThingsLibrary.Device.I2c
                 
         public TemperatureState TemperatureState { get; init; }
         public PressureState PressureState { get; init; }
-        public AltitudeState AltitudeState { get; init; }
+        public LengthState AltitudeState { get; init; }
 
         /// <inheritdoc/>
         /// <remarks>0x77 is default, 0x76 is secondary</remarks>
@@ -23,7 +23,7 @@ namespace ThingsLibrary.Device.I2c
             // States
             this.TemperatureState = new TemperatureState(isImperial: isImperial);
             this.PressureState = new PressureState(isImperial: isImperial);
-            this.AltitudeState = new AltitudeState(isImperial: isImperial);
+            this.AltitudeState = new LengthState(id: "Altitude", key: "alt", isImperial: isImperial);
 
             this.States = new Dictionary<string, ISensorState>()
             {
