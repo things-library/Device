@@ -6,7 +6,7 @@ namespace ThingsLibrary.Device.I2c
 {
     public class Vl53l0xSensor : Base.I2cSensor, ISensorStates
     {
-        private Vl53L0X _device { get; set; }
+        public Vl53L0X Device { get; set; }
         
         public LengthState DistanceState { get; init; }
 
@@ -29,13 +29,13 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                _device = new Vl53L0X(this.I2cDevice)
+                Device = new Vl53L0X(this.I2cDevice)
                 {
                     Precision = Precision.ShortRange,
                     MeasurementMode = MeasurementMode.Continuous
                 };
 
-                _device.StartContinuousMeasurement(10);
+                Device.StartContinuousMeasurement(10);
                                 
                 // we must enable for this device to work at all.
                 this.IsEnabled = true;
@@ -51,7 +51,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var distance = _device.Distance;  //in ms
+            var distance = Device.Distance;  //in ms
             if (distance >= (ushort)OperationRange.Maximum) { return false; }
 
             var updatedOn = DateTime.UtcNow;

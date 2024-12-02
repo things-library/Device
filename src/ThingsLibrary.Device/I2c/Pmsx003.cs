@@ -1,14 +1,11 @@
-﻿using Iot.Device;
-using ThingsLibrary.Device.Sensor.State;
-using ThingsLibrary.Device.Sensor;
-
+﻿
 namespace ThingsLibrary.Device.I2c
 {
     //https://learn.adafruit.com/pmsa003i
 
     public class Pmsx003Sensor : Base.I2cSensor
     {
-        private Pmsx003 _device { get; set; }
+        public Pmsx003 Device { get; set; }
 
         //States
         public AqiState AqiState { get; init; }
@@ -29,7 +26,7 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                _device = new Pmsx003(this.I2cDevice);
+                Device = new Pmsx003(this.I2cDevice);
 
                 //this.MinReadInterval = (int)Scd4x.MeasurementPeriod.TotalMilliseconds;
                 //if (this.ReadInterval < this.MinReadInterval) { throw new ArgumentException($"Read interval '{this.ReadInterval} ms' can not be less then min read interval '{this.MinReadInterval} ms' of sensor."); }
@@ -47,7 +44,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var readResult = _device.Read();
+            var readResult = Device.Read();
             if(readResult == null) { return false; }
             
             this.UpdatedOn = DateTime.UtcNow; 

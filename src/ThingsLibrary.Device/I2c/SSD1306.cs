@@ -1,23 +1,27 @@
-﻿using System.Drawing;
+﻿using Iot.Device.Ssd13xx;
+using System.Drawing;
 
-using Starlight.Device.Display.Font;
+using ThingsLibrary.Device.Display.Font;
+using ThingsLibrary.Device.I2c.Base;
 
 //
 // https://github.com/WildernessLabs/Netduino.Foundation/blob/67d190b2ac46165d05e1268c3f9d75e7bf651649/Source/Peripheral_Libs/Displays.SSD1306/Driver/SSD1306.cs
 //
-namespace Starlight.Device.I2c
+namespace ThingsLibrary.Device
 {
-    public class DisplaySSD1306 : Base.I2cDevice
+    public class Ssd1306Display : I2cBase
     {
+        public Ssd1306 Device { get; set; }
+
         /// <summary>
         /// Height of the display
         /// </summary>
-        public byte Height { get; private set; }
+        public byte Height { get; set; }
 
         /// <summary>
         /// Width of the display
         /// </summary>
-        public byte Width { get; private set; }
+        public byte Width { get; set; }
 
         /// <summary>
         /// Type of the display
@@ -27,8 +31,13 @@ namespace Starlight.Device.I2c
         /// <summary>
         /// Current Font to use when displaying text
         /// </summary>
-        public FontBase CurrentFont { get; set; } = new Display.Font.Font4x8();
+        public FontBase CurrentFont { get; set; } = new Font4x8();
 
+        /// <summary>
+        /// Current text cursor position for text writing
+        /// </summary>
+        public Point CursorPosition { get; set; } = new Point(0, 0);
+          
         /// <summary>
         /// Get / Put the display to sleep (turns the display off).
         /// </summary>
@@ -37,7 +46,7 @@ namespace Starlight.Device.I2c
             get => _isAsleep;
             set
             {
-                if(_isAsleep == value) { return; }
+                if (_isAsleep == value) { return; }
 
                 _isAsleep = value;
                 this.SendCommand((byte)(_isAsleep ? 0xae : 0xaf));
@@ -53,7 +62,7 @@ namespace Starlight.Device.I2c
             get => _isInverted;
             set
             {
-                if(_isInverted == value) { return; }
+                if (_isInverted == value) { return; }
 
                 _isInverted = value;
                 this.SendCommand((byte)(value ? 0xa7 : 0xa6));
@@ -75,7 +84,6 @@ namespace Starlight.Device.I2c
         }
         private byte _contrast;
 
-
         /// <summary>
         /// Buffer holding the pixels in the display.
         /// </summary>
@@ -86,19 +94,21 @@ namespace Starlight.Device.I2c
         /// </summary>
         private byte[] _showPreamble;
 
-        /// <summary>
-        /// Current text cursor position for text writing
-        /// </summary>
-        public Point CursorPosition { get; set; } = new Point(0, 0);
 
-        public DisplaySSD1306(string name, int id = 0x3c, int busId = 1, DisplayType displayType = DisplayType.OLED128x64) : base(name, id, busId)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="i2cBus"></param>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="displayType"></param>
+        public Ssd1306Display(I2cBus i2cBus, int id = 0x3c, string name = "Ssd1306", DisplayType displayType = DisplayType.OLED128x64) : base(i2cBus, id, name)
         {
             this.Type = displayType;
         }
 
         public override void Init()
         {
-
             base.Init();
 
             switch (this.Type)
@@ -167,7 +177,7 @@ namespace Starlight.Device.I2c
         /// <param name="command">Command byte to send to the display.</param>
         private void SendCommand(byte command)
         {
-            this.Device.Write(new byte[] { 0x00, command });
+            this.Device.SendData(new byte[] { 0x00, command });
         }
 
         /// <summary>
@@ -180,7 +190,7 @@ namespace Starlight.Device.I2c
             data[0] = 0x00;
             Array.Copy(commands, 0, data, 1, commands.Length);
 
-            this.Device.Write(data);
+            this.Device.SendData(data);
         }
 
         /// <summary>
@@ -199,7 +209,7 @@ namespace Starlight.Device.I2c
             {
                 Array.Copy(_buffer, index, data, 1, PAGE_SIZE);
                 this.SendCommand(0x40);
-                this.Device.Write(data);
+                this.Device.SendData(data);
             }
         }
 
@@ -518,7 +528,7 @@ namespace Starlight.Device.I2c
                 {
                     scrollDirection = 0x29;
                 }
-                commands = new byte[]  { 0xa3, 0x00, (byte)this.Height, scrollDirection, 0x00, startPage, 0x00, endPage, 0x01, 0x2f };
+                commands = new byte[] { 0xa3, 0x00, (byte)this.Height, scrollDirection, 0x00, startPage, 0x00, endPage, 0x01, 0x2f };
             }
             this.SendCommands(commands);
         }

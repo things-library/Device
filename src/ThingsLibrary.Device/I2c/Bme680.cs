@@ -1,7 +1,4 @@
 ﻿using Iot.Device.Bmxx80;
-using Iot.Device.Bmxx80.FilteringMode;
-using ThingsLibrary.Device.Sensor;
-using ThingsLibrary.Device.Sensor.State;
 
 // https://learn.adafruit.com/adafruit-bme680-humidity-temperature-barometic-pressure-voc-gas
 
@@ -9,7 +6,7 @@ namespace ThingsLibrary.Device.I2c
 {
     public class Bme680Sensor : Base.I2cSensor, ISensorStates
     {
-        private Bme680 _device { get; set; }
+        public Bme680 Device { get; set; }
                 
         public TemperatureState TemperatureState { get; init; }
         public HumidityState HumidityState { get; init; }
@@ -46,10 +43,10 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                _device = new Bme680(this.I2cDevice);
-                _device.TemperatureSampling = Sampling.Standard;
-                _device.HumiditySampling = Sampling.Standard;
-                _device.PressureSampling = Sampling.Standard;
+                Device = new Bme680(this.I2cDevice);
+                Device.TemperatureSampling = Sampling.Standard;
+                Device.HumiditySampling = Sampling.Standard;
+                Device.PressureSampling = Sampling.Standard;
 
                 //_device.FilterMode = Bmx280FilteringMode.X16;
                 //_device.StandbyTime = StandbyTime.Ms1000;
@@ -70,7 +67,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
             
-            var readResult = _device.Read();
+            var readResult = Device.Read();
             if (readResult == null) { return false; }
 
             var updatedOn = DateTime.UtcNow;

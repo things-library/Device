@@ -8,7 +8,7 @@ namespace ThingsLibrary.Device.I2c
 {
     public class Bmp280Sensor : Base.I2cSensor, ISensorStates
     {
-        private Bmp280 _device { get; set; }
+        public Bmp280 Device { get; set; }
                 
         public TemperatureState TemperatureState { get; init; }
         public PressureState PressureState { get; init; }
@@ -39,14 +39,14 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                _device = new Bmp280(this.I2cDevice);
-                _device.TemperatureSampling = Sampling.Standard;
-                _device.PressureSampling = Sampling.Standard;
+                Device = new Bmp280(this.I2cDevice);
+                Device.TemperatureSampling = Sampling.Standard;
+                Device.PressureSampling = Sampling.Standard;
 
-                _device.FilterMode = Bmx280FilteringMode.X16;
-                _device.StandbyTime = StandbyTime.Ms1000;
+                Device.FilterMode = Bmx280FilteringMode.X16;
+                Device.StandbyTime = StandbyTime.Ms1000;
 
-                this.MinReadInterval = _device.GetMeasurementDuration();
+                this.MinReadInterval = Device.GetMeasurementDuration();
 
                 // we must enable for this device to work at all.
                 this.IsEnabled = true;
@@ -62,7 +62,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
             
-            var readResult = _device.Read();
+            var readResult = Device.Read();
             if (readResult == null) { return false; }
 
             var updatedOn = DateTime.UtcNow;

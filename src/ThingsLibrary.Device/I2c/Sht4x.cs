@@ -7,7 +7,7 @@ namespace ThingsLibrary.Device.I2c
 {
     public class Sht4xSensor : Base.I2cSensor, ISensorStates
     {
-        private Sht4x _device { get; set; }
+        public Sht4x Device { get; set; }
 
         public TemperatureState TemperatureState { get; init; }
         public HumidityState HumidityState { get; init; }
@@ -35,7 +35,7 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                _device = new Sht4x(this.I2cDevice);
+                Device = new Sht4x(this.I2cDevice);
 
                 //this.MinReadInterval = _device.GetMeasurementDuration();
 
@@ -53,7 +53,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var (humidity, temp) = _device.ReadHumidityAndTemperature();
+            var (humidity, temp) = Device.ReadHumidityAndTemperature();
             if (humidity is null || temp is null) { return false; }
 
             var updatedOn = DateTime.UtcNow;

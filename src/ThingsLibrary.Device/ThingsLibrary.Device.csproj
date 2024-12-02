@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Gpio\TempSensorDht.cs" />
-    <Compile Remove="Gpio\TempSensorProbe.cs" />
-    <Compile Remove="I2c\DisplaySSD1306.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Gpio\TempSensorDht.cs" />
+		<Compile Remove="Gpio\TempSensorProbe.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Iot.Device.Bindings" Version="3.2.0" />
-    <PackageReference Include="System.Device.Gpio" Version="3.2.0" />
-    <PackageReference Include="ThingsLibrary.Base" Version="0.1.4" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Iot.Device.Bindings" Version="3.2.0" />
+		<PackageReference Include="System.Device.Gpio" Version="3.2.0" />
+		<PackageReference Include="System.Text.Json" Version="9.0.0" />
+		<PackageReference Include="ThingsLibrary.Base" Version="0.1.4" />
+	</ItemGroup>
 
 </Project>

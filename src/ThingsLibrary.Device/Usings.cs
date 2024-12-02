@@ -13,7 +13,7 @@ global using System.Device.I2c;
 global using System.Device.Spi;
 
 global using Iot.Device.Common;
-global using Iot.Device.Board;
+global using Iot.Device;
 
 // ======================================================================
 // THIRD PARTY

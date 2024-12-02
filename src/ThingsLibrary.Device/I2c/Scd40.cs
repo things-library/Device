@@ -4,7 +4,7 @@ namespace ThingsLibrary.Device.I2c
 {
     public class Scd40Sensor : Base.I2cSensor
     {
-        private Scd4x _device { get; set; }
+        public Scd4x Device { get; set; }
 
         // States
         public Co2State Co2State { get; init; }
@@ -42,7 +42,7 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                _device = new Scd4x(this.I2cDevice);
+                Device = new Scd4x(this.I2cDevice);
 
                 this.MinReadInterval = (int)Scd4x.MeasurementPeriod.TotalMilliseconds;
                 if (this.ReadInterval < this.MinReadInterval)
@@ -64,7 +64,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var readResult = _device.ReadPeriodicMeasurement();
+            var readResult = Device.ReadPeriodicMeasurement();
             
             var updatedOn = DateTime.UtcNow;
             var isStateChanged = false;
