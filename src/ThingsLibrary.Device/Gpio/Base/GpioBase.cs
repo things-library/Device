@@ -37,7 +37,7 @@
             set
             {
                 if (this.IsChanged) { this.IsChanged = false; }
-                if (_state == value) { return; } //nothing to do
+                if (_state == value) { return; } //nothing to do, state didn't change
 
                 lock (_lockObj)
                 {

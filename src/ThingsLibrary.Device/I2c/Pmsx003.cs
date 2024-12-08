@@ -26,7 +26,7 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                Device = new Pmsx003(this.I2cDevice);
+                this.Device = new Pmsx003(this.I2cDevice);
 
                 //this.MinReadInterval = (int)Scd4x.MeasurementPeriod.TotalMilliseconds;
                 //if (this.ReadInterval < this.MinReadInterval) { throw new ArgumentException($"Read interval '{this.ReadInterval} ms' can not be less then min read interval '{this.MinReadInterval} ms' of sensor."); }

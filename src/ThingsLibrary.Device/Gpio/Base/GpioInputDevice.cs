@@ -32,7 +32,7 @@
         /// <param name="isPullDown">If a pulldown resistor should be used</param>
         public GpioInputDevice(GpioController controller, ushort pinId, string name, bool isPullUp, bool isPullDown) : base(controller, pinId, name)
         {
-            if (isPullUp && isPullDown) { throw new ArgumentException("Device can only be pulled up or pulled down, but not both."); }
+            if (isPullUp && isPullDown) { throw new ArgumentException("I2cDevice can only be pulled up or pulled down, but not both."); }
 
             this.IsPullUp = isPullUp;
             this.IsPullDown = isPullDown;
@@ -44,7 +44,7 @@
         /// <exception cref="ArgumentException"></exception>
         public override void Init(bool enableDevice = true)
         {
-            PinMode pinMode = PinMode.Input;
+            var pinMode = PinMode.Input;
             
             if (this.IsPullUp) { pinMode = PinMode.InputPullUp; }            
             else if (this.IsPullDown) { pinMode = PinMode.InputPullDown; }

@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsLibrary.Device", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsLibrary.Device.Tests", "tests\ThingsLibrary.Device.Tests\ThingsLibrary.Device.Tests.csproj", "{B63EEBAD-8AFF-4BCD-85DF-7BCF1B413B52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iot.Device.Ssd13xx", "src\Iot.Device.Ssd13xx\src\Iot.Device.Ssd13xx\Iot.Device.Ssd13xx.csproj", "{D6F150FE-6D70-4CE6-9E75-88D41C74180D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{B63EEBAD-8AFF-4BCD-85DF-7BCF1B413B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B63EEBAD-8AFF-4BCD-85DF-7BCF1B413B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B63EEBAD-8AFF-4BCD-85DF-7BCF1B413B52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F150FE-6D70-4CE6-9E75-88D41C74180D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F150FE-6D70-4CE6-9E75-88D41C74180D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F150FE-6D70-4CE6-9E75-88D41C74180D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F150FE-6D70-4CE6-9E75-88D41C74180D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

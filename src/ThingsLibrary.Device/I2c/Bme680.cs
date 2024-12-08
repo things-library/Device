@@ -43,15 +43,15 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                Device = new Bme680(this.I2cDevice);
-                Device.TemperatureSampling = Sampling.Standard;
-                Device.HumiditySampling = Sampling.Standard;
-                Device.PressureSampling = Sampling.Standard;
+                this.Device = new Bme680(this.I2cDevice);
+                this.Device.TemperatureSampling = Sampling.Standard;
+                this.Device.HumiditySampling = Sampling.Standard;
+                this.Device.PressureSampling = Sampling.Standard;
 
                 //_device.FilterMode = Bmx280FilteringMode.X16;
                 //_device.StandbyTime = StandbyTime.Ms1000;
 
-                //this.MinReadInterval = _device.GetMeasurementDuration();
+                //this.MinReadInterval = this.Device.GetMeasurementDuration();
 
                 // we must enable for this device to work at all.
                 this.IsEnabled = true;
@@ -67,7 +67,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
             
-            var readResult = Device.Read();
+            var readResult = this.Device.Read();
             if (readResult == null) { return false; }
 
             var updatedOn = DateTime.UtcNow;

@@ -53,7 +53,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var (humidity, temp) = Device.ReadHumidityAndTemperature();
+            var (humidity, temp) = this.Device.ReadHumidityAndTemperature();
             if (humidity is null || temp is null) { return false; }
 
             var updatedOn = DateTime.UtcNow;

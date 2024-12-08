@@ -15,7 +15,7 @@ namespace ThingsLibrary.Device.I2c
         public Vl53l0xSensor(I2cBus i2cBus, int id = 0x29, string name = "Vl5310x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {            
             // States
-            this.DistanceState = new LengthState("Distance", "dist", isImperial: isImperial);
+            this.DistanceState = new LengthState("Distance", "d", isImperial: isImperial);
 
             this.States = new Dictionary<string, ISensorState>()
             {
@@ -29,13 +29,13 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                Device = new Vl53L0X(this.I2cDevice)
+                this.Device = new Vl53L0X(this.I2cDevice)
                 {
                     Precision = Precision.ShortRange,
                     MeasurementMode = MeasurementMode.Continuous
                 };
 
-                Device.StartContinuousMeasurement(10);
+                this.Device.StartContinuousMeasurement(10);
                                 
                 // we must enable for this device to work at all.
                 this.IsEnabled = true;
@@ -51,7 +51,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var distance = Device.Distance;  //in ms
+            var distance = this.Device.Distance; 
             if (distance >= (ushort)OperationRange.Maximum) { return false; }
 
             var updatedOn = DateTime.UtcNow;

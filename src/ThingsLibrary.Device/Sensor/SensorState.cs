@@ -20,6 +20,13 @@
         /// <inheritdoc />
         public DateTime? UpdatedOn { get; set; }
 
+        /// <summary>
+        /// Number of digits after the decimal, also how much the data is scaled for telemetry (0 = no scaling)
+        /// </summary>
+        /// <example>1 = for temp so 78.1 becomes 781 in telemetry data</example>
+        public byte ValuePrecision { get; internal set; }
+
+
         // ============================================================
         // ABSTRACT
         // ============================================================

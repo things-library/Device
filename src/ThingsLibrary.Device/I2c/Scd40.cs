@@ -42,7 +42,7 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                Device = new Scd4x(this.I2cDevice);
+                this.Device = new Scd4x(this.I2cDevice);
 
                 this.MinReadInterval = (int)Scd4x.MeasurementPeriod.TotalMilliseconds;
                 if (this.ReadInterval < this.MinReadInterval)
@@ -64,7 +64,7 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var readResult = Device.ReadPeriodicMeasurement();
+            var readResult = this.Device.ReadPeriodicMeasurement();
             
             var updatedOn = DateTime.UtcNow;
             var isStateChanged = false;
@@ -99,7 +99,6 @@ namespace ThingsLibrary.Device.I2c
                 var dewPoint = WeatherHelper.CalculateDewPoint(this.TemperatureState.Temperature, this.HumidityState.Humidity);
                 this.DewPointState.Update(dewPoint, updatedOn);
             }
-
 
             // see if anyone is listening
             if (isStateChanged)

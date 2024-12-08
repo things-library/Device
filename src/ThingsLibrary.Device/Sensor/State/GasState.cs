@@ -6,7 +6,7 @@
 
         public override double Value => this.GasResistance.Ohms;
 
-        public override string ValueString() => $"{(this.IsImperial ? this.Value.ToString("0.00") : this.Value.ToString("0"))} {this.UnitSymbol}";
+        public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")} {this.UnitSymbol}";
 
         public void Update(ElectricResistance resistance, DateTime updatedOn)
         {

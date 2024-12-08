@@ -1,19 +1,23 @@
-﻿namespace ThingsLibrary.Device.Display.Font
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+namespace IotDevice.Ssd13xx.Fonts
 {
     /// <summary>
-    /// Abstract class for a Font.
+    /// Base class for font implementation.
     /// </summary>
-    public abstract class FontBase
+    public abstract class IFont
     {
         /// <summary>
-        /// Width of a character in the font.
+        /// Gets font width.
         /// </summary>
-        public abstract byte Width { get; }
+        public virtual byte Width { get; }
 
         /// <summary>
-        /// Height of a character in the font.
+        /// Gets font height.
         /// </summary>
-        public abstract byte Height { get; }
+        public virtual byte Height { get; }
 
         /// <summary>
         /// Get the binary representation of the ASCII character from the font table.

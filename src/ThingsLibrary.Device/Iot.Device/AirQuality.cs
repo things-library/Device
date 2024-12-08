@@ -1,6 +1,4 @@
-﻿using UnitsNet;
-
-namespace Iot.Device
+﻿namespace Iot.Device
 {
     public class AirQuality
     {
@@ -13,17 +11,17 @@ namespace Iot.Device
         /// <summary>
         /// PM1.0 concentration unit: µg/𝑚3 (standard particle)
         /// </summary>
-        public ushort Standard_Pm10 { get; init; }
+        public ushort? StandardPm10 { get; init; }
 
         /// <summary>
         /// PM2.5 concentration unit: µg/𝑚3 (standard particle)
         /// </summary>
-        public ushort Standard_Pm25 { get; init; }
+        public ushort? StandardPm25 { get; init; }
 
         /// <summary>
         /// PM10.0 concentration unit: µg/𝑚3 (standard particle)
         /// </summary>
-        public ushort Standard_Pm100 { get; init; }
+        public ushort? StandardPm100 { get; init; }
 
 
         // ======================================================================
@@ -36,17 +34,17 @@ namespace Iot.Device
         /// <summary>
         /// PM1.0 concentration unit：µg/𝑚3 (under atmospheric environment)
         /// </summary>
-        public ushort Environment_Pm10 { get; init; }
+        public ushort? EnvironmentPm10 { get; init; }
 
         /// <summary>
         /// PM2.5 concentration unit：µg/𝑚3 (under atmospheric environment)
         /// </summary>
-        public ushort Environment_Pm25 { get; init; }
+        public ushort? EnvironmentPm25 { get; init; }
 
         /// <summary>
         /// PM10.0 concentration unit：µg/𝑚3 (under atmospheric environment)
         /// </summary>
-        public ushort Environment_Pm100 { get; init; }
+        public ushort? EnvironmentPm100 { get; init; }
 
 
         // ======================================================================
@@ -56,31 +54,31 @@ namespace Iot.Device
         /// <summary>
         /// Number of particles with diameter beyond 0.3 µ𝑚 in 0.1L of air
         /// </summary>
-        public ushort Particles_03 { get; init; }
+        public ushort? Particles03 { get; init; }
 
         /// <summary>
         /// Number of particles with diameter beyond 0.5 µ𝑚 in 0.1L of air
         /// </summary>
-        public ushort Particles_05 { get; init; }
+        public ushort? Particles05 { get; init; }
 
         /// <summary>
         /// Number of particles with diameter beyond 1.0 µ𝑚 in 0.1L of air
         /// </summary>
-        public ushort Particles_10 { get; init; }
+        public ushort? Particles10 { get; init; }
 
         /// <summary>
         /// Number of particles with diameter beyond 2.5 µ𝑚 in 0.1L of air
         /// </summary>
-        public ushort Particles_25 { get; init; }
+        public ushort? Particles25 { get; init; }
 
         /// <summary>
         /// Number of particles with diameter beyond 5.0 µ𝑚 in 0.1L of air
         /// </summary>
-        public ushort Particles_50 { get; init; }
+        public ushort? Particles50 { get; init; }
 
         /// <summary>
         /// Number of particles with diameter beyond 10.0 µ𝑚 in 0.1L of air
         /// </summary>
-        public ushort Particles_100 { get; init; }
+        public ushort? Particles100 { get; init; }
     }
 }

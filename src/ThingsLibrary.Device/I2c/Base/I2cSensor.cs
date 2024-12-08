@@ -51,7 +51,10 @@
         /// If the output should be in metric units
         /// </summary>
         public bool IsImperial { get; internal set; }
-
+                
+        /// <summary>
+        /// Any Error that has occured initalizing or reading from the sensor
+        /// </summary>
         public string ErrorMessage { get; internal set; }
 
         public override string ToString() => String.Join(", ", this.States.Values.Select(x => x.ToString()));

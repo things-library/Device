@@ -6,7 +6,7 @@
 
         public override double Value => (this.IsImperial ? this.Altitude.Feet : this.Altitude.Meters);
 
-        public override string ValueString() => $"{this.Value.ToString("0.000")} {this.UnitSymbol}";
+        public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")} {this.UnitSymbol}";
 
         public void Update(Length length, DateTime updatedOn)
         {
@@ -14,9 +14,10 @@
             this.UpdatedOn = updatedOn;
         }
 
-        public LengthState(string id = "Length", string key = "l", bool isImperial = false) : base(id, key, isImperial)
+        public LengthState(string id = "Length", string key = "l", bool isImperial = false, byte telemetryScaleFactor = 0) : base(id, key, isImperial)
         {
             this.UnitSymbol = (this.IsImperial ? "ft" : "m");
+            this.ValuePrecision = (byte)(this.IsImperial ? 2 : 3);
         }
     }
 }

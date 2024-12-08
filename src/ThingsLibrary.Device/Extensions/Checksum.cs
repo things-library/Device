@@ -36,7 +36,7 @@
             return false;
         }
 
-        public static long ToEpoch(DateTime dateTime) => (long)(dateTime - new DateTime(1970, 1, 1)).TotalSeconds * 100;
+        public static long ToEpochMs(DateTime dateTime) => (long)(dateTime - new DateTime(1970, 1, 1)).TotalSeconds * 100;
 
     }
 }

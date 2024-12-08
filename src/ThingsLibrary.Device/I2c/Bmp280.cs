@@ -39,14 +39,14 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                Device = new Bmp280(this.I2cDevice);
-                Device.TemperatureSampling = Sampling.Standard;
-                Device.PressureSampling = Sampling.Standard;
+                this.Device = new Bmp280(this.I2cDevice);
+                this.Device.TemperatureSampling = Sampling.Standard;
+                this.Device.PressureSampling = Sampling.Standard;
 
-                Device.FilterMode = Bmx280FilteringMode.X16;
-                Device.StandbyTime = StandbyTime.Ms1000;
+                this.Device.FilterMode = Bmx280FilteringMode.X16;
+                this.Device.StandbyTime = StandbyTime.Ms1000;
 
-                this.MinReadInterval = Device.GetMeasurementDuration();
+                this.MinReadInterval = this.Device.GetMeasurementDuration();
 
                 // we must enable for this device to work at all.
                 this.IsEnabled = true;

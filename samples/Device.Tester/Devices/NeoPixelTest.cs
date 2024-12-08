@@ -10,7 +10,7 @@ namespace Device.Tester.Devices
 
         public NeoPixelTest(SpiDevice spiDevice) 
         {
-            this.NeoPixel = new NeoPixel("Test Device", spiDevice, LedDriver.Ws2812b, 8);
+            this.NeoPixel = new NeoPixel("Test I2cDevice", spiDevice, LedDriver.Ws2812b, 8);
         }
 
         public void Init()

@@ -6,7 +6,7 @@
 
         public override double Value => Humidity.Percent;
 
-        public override string ValueString() => $"{this.Value.ToString("0.0")}{this.UnitSymbol}";
+        public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")}{this.UnitSymbol}";
 
         public void Update(RelativeHumidity humidity, DateTime updatedOn)
         {
@@ -17,6 +17,7 @@
         public HumidityState(string id = "Humidity", string key = "h", bool isImperial = false) : base(id, key, isImperial)
         {
             this.UnitSymbol = "%";
+            this.ValuePrecision = 1;
         }
     }
 }

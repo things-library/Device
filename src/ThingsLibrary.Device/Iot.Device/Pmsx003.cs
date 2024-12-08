@@ -1,8 +1,4 @@
-﻿using System.Device.Model;
-using System.Diagnostics;
-using UnitsNet;
-
-namespace Iot.Device
+﻿namespace Iot.Device
 {
     /// <summary>
     /// PMSx003 Series - PM2.5 AQI (Air quality sensor)
@@ -30,7 +26,9 @@ namespace Iot.Device
         /// </summary>
         public const byte DefaultI2cAddress = 0x12; // PMSA003I has only one I2C address (18 or 0x12)
 
-        private I2cDevice _device { get; set; }
+        public I2cDevice I2cDevice { get; set; }
+
+        private bool IsDisposed { get; set; } = false;
 
         //private byte Version { get; set; }
         //private byte ErrorCode { get; set; }
@@ -42,7 +40,7 @@ namespace Iot.Device
         /// <param name="i2cDevice">The I²C device to operate on.</param>
         public Pmsx003(I2cDevice i2cDevice)
         {
-            _device = i2cDevice ?? throw new ArgumentNullException(nameof(i2cDevice));            
+            this.I2cDevice = i2cDevice ?? throw new ArgumentNullException(nameof(i2cDevice));            
         }
 
         /// <summary>
@@ -53,12 +51,12 @@ namespace Iot.Device
         {
             // Reference: https://cdn-shop.adafruit.com/product-files/4632/4505_PMSA003I_series_data_manual_English_V2.6.pdf
             //  Section 5, Register Definition
-            
-            _device.WriteByte((byte)0x00);
+
+            this.I2cDevice.WriteByte((byte)0x00);
 
             // read all at once since we are dealing with a checksum
             Span<Byte> readBuffer = stackalloc byte[32];
-            _device.Read(readBuffer);
+            this.I2cDevice.Read(readBuffer);
             
             // calculate checksum
             if(!CrcCheck(readBuffer)) { return null; }
@@ -73,22 +71,22 @@ namespace Iot.Device
             var airQuality = new AirQuality
             {
                 // Standard Particles   
-                Standard_Pm10 = ToUshort(readBuffer[0x04], readBuffer[0x05]), //PM1.0 concentration unit: µg /𝑚3
-                Standard_Pm25 = ToUshort(readBuffer[0x06], readBuffer[0x07]), //PM2.5 concentration unit：µg /𝑚3
-                Standard_Pm100 = ToUshort(readBuffer[0x08], readBuffer[0x09]), //PM10 concentration unit：µg /𝑚3 
+                StandardPm10 = ToUshort(readBuffer[0x04], readBuffer[0x05]),  //PM1.0 concentration unit: µg /𝑚3
+                StandardPm25 = ToUshort(readBuffer[0x06], readBuffer[0x07]),  //PM2.5 concentration unit：µg /𝑚3
+                StandardPm100 = ToUshort(readBuffer[0x08], readBuffer[0x09]), //PM10 concentration unit：µg /𝑚3 
 
                 // Atmospheric Environment
-                Environment_Pm10 = ToUshort(readBuffer[0x0a], readBuffer[0x0b]),  //PM1.0 concentration unit：µg /𝑚3 (under atmospheric environment)
-                Environment_Pm25 = ToUshort(readBuffer[0x0c], readBuffer[0x0d]),  //PM2.5 concentration unit：µg /𝑚3 (under atmospheric environment)
-                Environment_Pm100 = ToUshort(readBuffer[0x0e], readBuffer[0x0f]), //PM10.0 concentration unit：µg /𝑚3 (under atmospheric environment)
+                EnvironmentPm10 = ToUshort(readBuffer[0x0a], readBuffer[0x0b]),  //PM1.0 concentration unit：µg /𝑚3 (under atmospheric environment)
+                EnvironmentPm25 = ToUshort(readBuffer[0x0c], readBuffer[0x0d]),  //PM2.5 concentration unit：µg /𝑚3 (under atmospheric environment)
+                EnvironmentPm100 = ToUshort(readBuffer[0x0e], readBuffer[0x0f]), //PM10.0 concentration unit：µg /𝑚3 (under atmospheric environment)
 
                 // Particle Concentrations (Number of particles with diameter beyond xx.x µ𝑚 in 0.1L of air)
-                Particles_03 = ToUshort(readBuffer[0x10], readBuffer[0x11]),  //  > 0.3 µ𝑚
-                Particles_05 = ToUshort(readBuffer[0x12], readBuffer[0x13]),  //  > 0.5 µ𝑚
-                Particles_10 = ToUshort(readBuffer[0x14], readBuffer[0x15]),  //  > 1.0 µ𝑚
-                Particles_25 = ToUshort(readBuffer[0x16], readBuffer[0x17]),  //  > 2.5 µ𝑚
-                Particles_50 = ToUshort(readBuffer[0x18], readBuffer[0x19]),  //  > 5.0 µ𝑚
-                Particles_100 = ToUshort(readBuffer[0x1a], readBuffer[0x1b])  // > 10.0 µ𝑚
+                Particles03 = ToUshort(readBuffer[0x10], readBuffer[0x11]),  //  > 0.3 µ𝑚
+                Particles05 = ToUshort(readBuffer[0x12], readBuffer[0x13]),  //  > 0.5 µ𝑚
+                Particles10 = ToUshort(readBuffer[0x14], readBuffer[0x15]),  //  > 1.0 µ𝑚
+                Particles25 = ToUshort(readBuffer[0x16], readBuffer[0x17]),  //  > 2.5 µ𝑚
+                Particles50 = ToUshort(readBuffer[0x18], readBuffer[0x19]),  //  > 5.0 µ𝑚
+                Particles100 = ToUshort(readBuffer[0x1a], readBuffer[0x1b])  // > 10.0 µ𝑚
             };
 
             return airQuality;
@@ -115,19 +113,23 @@ namespace Iot.Device
             return (sum == checksum);
         }
 
-        public static ushort ToUshort(byte hi, byte low)
+        private static ushort ToUshort(byte hi, byte low)
         {
             // The data comes in Endian so largest bit then smallest (register mapping below instead of assumptions)
 
             return (ushort)(hi << 8 | low);
         }
 
+        /// <summary>
+        /// Cleanup resources.
+        /// </summary>        
         public void Dispose()
-        {
-            //if (_started) { this.StopPeriodicMeasurements(); }
+        {            
+            if (this.IsDisposed) { return; }
 
-            _device?.Dispose();
-            _device = null!;
+            this.I2cDevice.Dispose();
+
+            this.IsDisposed = true;
         }
     }
 }

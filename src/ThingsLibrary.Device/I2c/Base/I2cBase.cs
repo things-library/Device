@@ -4,8 +4,18 @@
 
 namespace ThingsLibrary.Device.I2c.Base
 {
-    public abstract class I2cBase
+    public interface I2cBaseInterface
     {
+        public static abstract int DefaultAddress { get; set; }
+        public static abstract int? SecondaryAddress { get; set; }
+    }
+
+
+    public abstract class I2cBase //: I2cBaseInterface
+    {
+        //public static int DefaultAddress { get; set; }
+        //public static int? SecondaryAddress { get; set; }
+
         public I2cBus I2cBus { get; init; }
         public I2cDevice I2cDevice { get; set; }
 
