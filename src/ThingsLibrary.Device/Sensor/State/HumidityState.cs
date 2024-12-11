@@ -8,9 +8,11 @@
 
         public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")}{this.UnitSymbol}";
 
-        public void Update(RelativeHumidity humidity, DateTime updatedOn)
+        public void Update(RelativeHumidity? measurement, DateTimeOffset updatedOn)
         {
-            this.Humidity = humidity;
+            if(measurement is null) { return; }
+
+            this.Humidity = measurement.Value;
             this.UpdatedOn = updatedOn;
         }
 

@@ -4,10 +4,31 @@
 
 namespace ThingsLibrary.Device.I2c
 {
+    /// <summary>
+    /// Laser distance time of flight ToF sensor
+    /// </summary>
     public class Vl53l0xSensor : Base.I2cSensor, ISensorStates
     {
         public Vl53L0X Device { get; set; }
-        
+
+        /// <summary>
+        /// If reassigning the device ID during initilization
+        /// </summary>
+        public int NewDeviceId { get; set; } = -1;  // -1 = not assigned
+                
+        /// <summary>
+        /// Shutdown Pin, when pulled low the sensor goes into shutdown mode.
+        /// </summary>
+        public int ShutdownPinId { get; set; } = -1; //-1 = not assigned
+
+        /// <summary>
+        /// Used for putting the sensors in shutdown mode
+        /// </summary>
+        public Vl53l0xSensorGroup SensorGroup { get; set; }
+
+        /// <summary>
+        /// Distance Measurement
+        /// </summary>
         public LengthState DistanceState { get; init; }
 
         /// <inheritdoc/>
@@ -15,11 +36,9 @@ namespace ThingsLibrary.Device.I2c
         public Vl53l0xSensor(I2cBus i2cBus, int id = 0x29, string name = "Vl5310x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {            
             // States
-            this.DistanceState = new LengthState("Distance", "d", isImperial: isImperial);
-
-            this.States = new Dictionary<string, ISensorState>()
+            this.States = new List<ISensorState>()
             {
-                { this.DistanceState.Id, this.DistanceState }
+                { this.DistanceState = new LengthState("Distance", "d", isImperial: isImperial) }
             };
         }
 
@@ -28,6 +47,15 @@ namespace ThingsLibrary.Device.I2c
             try
             {
                 base.Init();
+
+                // are we reassigning the ID using the shutdown PIN?
+                if (this.NewDeviceId > 0)
+                {
+                    //TODO: shutdown all other sensors that we know about using the shutdown pins
+
+                    Vl53L0X.ChangeI2cAddress(this.I2cDevice, (byte)this.NewDeviceId);
+                    this.I2cDevice = this.I2cBus.CreateDevice(this.NewDeviceId);
+                }
 
                 this.Device = new Vl53L0X(this.I2cDevice)
                 {

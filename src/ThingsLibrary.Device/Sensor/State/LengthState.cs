@@ -2,15 +2,18 @@
 {
     public class LengthState : SensorState
     {
-        public Length Altitude { get; private set; } = default;
+        public Length Length { get; private set; } = default;
 
-        public override double Value => (this.IsImperial ? this.Altitude.Feet : this.Altitude.Meters);
+        public override double Value => (this.IsImperial ? this.Length.Feet : this.Length.Meters);
 
         public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")} {this.UnitSymbol}";
 
-        public void Update(Length length, DateTime updatedOn)
+        public void Update(Length? measurement, DateTimeOffset updatedOn)
         {
-            this.Altitude = length;
+            // nothing to do.. trying to keep the code clean
+            if (measurement is null) { return; }
+
+            this.Length = measurement.Value;
             this.UpdatedOn = updatedOn;
         }
 

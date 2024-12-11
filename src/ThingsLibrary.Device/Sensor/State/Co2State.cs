@@ -8,13 +8,16 @@
 
         public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")} {this.UnitSymbol}";
 
-        public void Update(VolumeConcentration co2, DateTime updatedOn)
+        public void Update(VolumeConcentration? measurement, DateTimeOffset updatedOn)
         {
-            this.Co2 = co2;
+            // nothing to do.. trying to keep the code clean
+            if (measurement is null) { return; }
+
+            this.Co2 = measurement.Value;
             this.UpdatedOn = updatedOn;
         }
 
-        public Co2State(string id = "CO2", string key = "c", bool isImperial = false) : base(id, key, isImperial)
+        public Co2State(string id = "CO2", string key = "co2", bool isImperial = false) : base(id, key, isImperial)
         {
             this.UnitSymbol = "ppm";
             this.ValuePrecision = 0;

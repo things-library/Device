@@ -19,13 +19,10 @@ namespace ThingsLibrary.Device.I2c
             this.MinReadInterval = 7; //157hz = 6.37ms
 
             // States
-            this.TemperatureState = new TemperatureState(isImperial: isImperial);
-            this.HumidityState = new HumidityState(isImperial: isImperial);
-
-            this.States = new Dictionary<string, ISensorState>()
+            this.States = new List<ISensorState>(2)
             {
-                { this.TemperatureState.Id, this.TemperatureState },
-                { this.HumidityState.Id, this.HumidityState }
+                { this.TemperatureState = new TemperatureState(isImperial: isImperial) },
+                { this.HumidityState = new HumidityState(isImperial: isImperial) }
             };
         }
 
@@ -35,7 +32,7 @@ namespace ThingsLibrary.Device.I2c
             {
                 base.Init();
 
-                Device = new Sht4x(this.I2cDevice);
+                this.Device = new Sht4x(this.I2cDevice);
 
                 //this.MinReadInterval = _device.GetMeasurementDuration();
 

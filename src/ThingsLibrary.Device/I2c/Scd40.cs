@@ -18,21 +18,16 @@ namespace ThingsLibrary.Device.I2c
 
         public Scd40Sensor(I2cBus i2cBus, int id = 0x62, string name = "Scd40", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {
-            // States
-            this.Co2State = new Co2State(isImperial: isImperial);
-            this.TemperatureState = new TemperatureState(isImperial: isImperial);
-            this.HumidityState = new HumidityState(isImperial: isImperial);
-
-            this.HeatIndexState = new TemperatureState("Heat Index", "heat", isImperial: isImperial);
-            this.DewPointState = new TemperatureState("Dew Point", "dew", isImperial: isImperial);
-            
-            this.States = new Dictionary<string, ISensorState>()
+            // States            
+            this.States = new List<ISensorState>(5)
             {
-                { this.Co2State.Id, this.Co2State },
-                { this.TemperatureState.Id, this.TemperatureState },
-                { this.HumidityState.Id, this.HumidityState },
-                { this.HeatIndexState.Id, this.HeatIndexState },
-                { this.DewPointState.Id, this.DewPointState }
+                {   this.Co2State = new Co2State(isImperial: isImperial) },
+                {   this.TemperatureState = new TemperatureState(isImperial: isImperial) },
+                {   this.HumidityState = new HumidityState(isImperial: isImperial)  },
+                
+                // Calculated
+                {   this.HeatIndexState = new TemperatureState("Heat Index", "heat", isImperial: isImperial) },
+                {   this.DewPointState = new TemperatureState("Dew Point", "dew", isImperial: isImperial) }
             };
         }
 

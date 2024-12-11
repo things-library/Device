@@ -14,7 +14,13 @@
 		<PackageReference Include="Iot.Device.Bindings" Version="3.2.0" />
 		<PackageReference Include="System.Device.Gpio" Version="3.2.0" />
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />
-		<PackageReference Include="ThingsLibrary.Base" Version="0.1.4" />
+		<PackageReference Include="ThingsLibrary.Base" Version="0.1.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Iot.Device.Pmsx003\Iot.Device.Pmsx003.csproj" />
+	  <ProjectReference Include="..\Iot.Device.Sen5x\Iot.Device.Sen5x.csproj" />
+	  <ProjectReference Include="..\Iot.Device.Ssd13xx\src\Iot.Device.Ssd13xx\Iot.Device.Ssd13xx.csproj" />
 	</ItemGroup>
 
 </Project>

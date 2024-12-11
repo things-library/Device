@@ -84,7 +84,7 @@
         /// Constructor
         /// </summary>
         /// <param name="pinId">Board Pin Number</param>
-        protected GpioBase(GpioController gpioController, ushort pinId, string name)
+        protected GpioBase(GpioController gpioController, int pinId, string name)
         {
             this.Controller = gpioController ?? throw new ArgumentNullException(nameof(gpioController));
             

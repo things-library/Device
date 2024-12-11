@@ -20,20 +20,14 @@ namespace ThingsLibrary.Device.I2c
         {
             this.MinReadInterval = 7; //157hz = 6.37ms
 
-            // States
-            this.TemperatureState = new TemperatureState(isImperial: isImperial);
-            this.HumidityState = new HumidityState(isImperial: isImperial);
-            this.PressureState = new PressureState(isImperial: isImperial);
-            this.AltitudeState = new LengthState(id: "Altitude", key: "alt", isImperial: isImperial);
-            this.GasState = new GasState(isImperial: isImperial);
-
-            this.States = new Dictionary<string, ISensorState>()
+            // States   
+            this.States = new List<ISensorState>(5)
             {
-                { this.TemperatureState.Id, this.TemperatureState },
-                { this.HumidityState.Id, this.HumidityState },
-                { this.PressureState.Id, this.PressureState },
-                { this.AltitudeState.Id, this.AltitudeState },
-                { this.GasState.Id,  this.GasState }
+                { this.TemperatureState = new TemperatureState(isImperial: isImperial) },
+                { this.HumidityState = new HumidityState(isImperial: isImperial) },
+                { this.PressureState = new PressureState(isImperial: isImperial) },
+                { this.AltitudeState = new LengthState(id: "Altitude", key: "alt", isImperial: isImperial) { IsDisabled = true } }, //typically don't need altitude data
+                { this.GasState = new GasState(isImperial: isImperial) }
             };
         }
 
@@ -76,37 +70,38 @@ namespace ThingsLibrary.Device.I2c
             // TEMPERATURE
             if (readResult.Temperature is not null)
             {
-                this.TemperatureState.Update(readResult.Temperature.Value, updatedOn);
+                this.TemperatureState.Update(readResult.Temperature, updatedOn);
                 isStateChanged = true;
             }
 
             // TEMPERATURE
             if (readResult.Humidity is not null)
             {
-                this.HumidityState.Update(readResult.Humidity.Value, updatedOn);
+                this.HumidityState.Update(readResult.Humidity, updatedOn);
                 isStateChanged = true;
             }
 
             // PRESSURE
             if (readResult.Pressure is not null)
             {
-                this.PressureState.Update(readResult.Pressure.Value, updatedOn);
+                this.PressureState.Update(readResult.Pressure, updatedOn);
+                isStateChanged = true;
+            }
+            
+            // GAS
+            if (readResult.GasResistance is not null)
+            {
+                this.GasState.Update(readResult.GasResistance, updatedOn);
                 isStateChanged = true;
             }
 
-            // ALTITUDE
-            if (isStateChanged && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
+            // CALCULATE ALTITUDE
+            if (isStateChanged && !this.AltitudeState.IsDisabled && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
             {
                 var altitude = WeatherHelper.CalculateAltitude(this.PressureState.Pressure, this.TemperatureState.Temperature);
                 this.AltitudeState.Update(altitude, updatedOn);
             }
-
-            // GAS
-            if (readResult.GasResistance is not null)
-            {
-                this.GasState.Update(readResult.GasResistance.Value, updatedOn);
-                isStateChanged = true;
-            }
+        
 
             // see if anyone is listening
             if (isStateChanged)

@@ -21,15 +21,11 @@ namespace ThingsLibrary.Device.I2c
             this.MinReadInterval = 7; //157hz = 6.37ms
 
             // States
-            this.TemperatureState = new TemperatureState(isImperial: isImperial);
-            this.PressureState = new PressureState(isImperial: isImperial);
-            this.AltitudeState = new LengthState(id: "Altitude", key: "alt", isImperial: isImperial);
-
-            this.States = new Dictionary<string, ISensorState>()
+            this.States = new List<ISensorState>(3)
             {
-                { this.TemperatureState.Id, this.TemperatureState },
-                { this.PressureState.Id, this.PressureState },
-                { this.AltitudeState.Id, this.AltitudeState }
+                { this.TemperatureState = new TemperatureState(isImperial: isImperial) },
+                { this.PressureState = new PressureState(isImperial: isImperial) },
+                { this.AltitudeState = new LengthState(id: "Altitude", key: "alt", isImperial: isImperial) { IsDisabled = true } }  //typically don't need altitude data
             };
         }
 
@@ -78,12 +74,12 @@ namespace ThingsLibrary.Device.I2c
             // PRESSURE
             if (readResult.Pressure is not null)
             {
-                this.PressureState.Update(readResult.Pressure.Value, updatedOn);
+                this.PressureState.Update(readResult.Pressure, updatedOn);
                 isStateChanged = true;
             }
 
             // ALTITUDE
-            if (isStateChanged && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
+            if (isStateChanged && !this.AltitudeState.IsDisabled && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
             {
                 var altitude = WeatherHelper.CalculateAltitude(this.PressureState.Pressure, this.TemperatureState.Temperature);
                 this.AltitudeState.Update(altitude, updatedOn);

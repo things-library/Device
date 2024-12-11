@@ -1,4 +1,6 @@
-﻿namespace Iot.Device
+﻿using UnitsNet;
+
+namespace Iot.Device
 {
     public class AirQuality
     {
@@ -11,17 +13,17 @@
         /// <summary>
         /// PM1.0 concentration unit: µg/𝑚3 (standard particle)
         /// </summary>
-        public ushort? StandardPm10 { get; init; }
+        public MassConcentration? StandardPm10 { get; init; }
 
         /// <summary>
         /// PM2.5 concentration unit: µg/𝑚3 (standard particle)
         /// </summary>
-        public ushort? StandardPm25 { get; init; }
+        public MassConcentration? StandardPm25 { get; init; }
 
         /// <summary>
         /// PM10.0 concentration unit: µg/𝑚3 (standard particle)
         /// </summary>
-        public ushort? StandardPm100 { get; init; }
+        public MassConcentration? StandardPm100 { get; init; }
 
 
         // ======================================================================
@@ -34,17 +36,17 @@
         /// <summary>
         /// PM1.0 concentration unit：µg/𝑚3 (under atmospheric environment)
         /// </summary>
-        public ushort? EnvironmentPm10 { get; init; }
+        public MassConcentration? EnvironmentPm10 { get; init; }
 
         /// <summary>
         /// PM2.5 concentration unit：µg/𝑚3 (under atmospheric environment)
         /// </summary>
-        public ushort? EnvironmentPm25 { get; init; }
+        public MassConcentration? EnvironmentPm25 { get; init; }
 
         /// <summary>
         /// PM10.0 concentration unit：µg/𝑚3 (under atmospheric environment)
         /// </summary>
-        public ushort? EnvironmentPm100 { get; init; }
+        public MassConcentration? EnvironmentPm100 { get; init; }
 
 
         // ======================================================================

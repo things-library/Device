@@ -8,9 +8,12 @@
 
         public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")} {this.UnitSymbol}";
 
-        public void Update(ElectricResistance resistance, DateTime updatedOn)
+        public void Update(ElectricResistance? measurement, DateTimeOffset updatedOn)
         {
-            this.GasResistance = resistance;
+            // nothing to do.. trying to keep the code clean
+            if (measurement is null) { return; }
+
+            this.GasResistance = measurement.Value;
             this.UpdatedOn = updatedOn;
         }
 

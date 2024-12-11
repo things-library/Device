@@ -43,6 +43,9 @@ namespace ThingsLibrary.Device.I2c.Base
         /// <param name="name">Device Name</param>
         public I2cBase(I2cBus i2cBus, int id, string name)
         {
+            //0x00-0x07 and 0xF0-0xFF
+            if (id <= 7 && id >= 240) { throw new ArgumentException($"Invalid I2C address: {id}.  Id must be between 7 and 240 (0x07-0f0)", "id"); }
+
             this.I2cBus = i2cBus;
             
             this.Id = id;   // address Id
@@ -54,7 +57,7 @@ namespace ThingsLibrary.Device.I2c.Base
         /// </summary>
         /// <param name="enableDevice"></param>
         public virtual void Init()
-        {            
+        {         
             this.I2cDevice = this.I2cBus.CreateDevice(this.Id);
         }
     }

@@ -8,11 +8,11 @@
         /// <summary>
         /// Last State Fetch Timestamp
         /// </summary>
-        public DateTime UpdatedOn { get; }
+        public DateTimeOffset UpdatedOn { get; }
                 
         /// <summary>
         /// Collection of States
         /// </summary>
-        public Dictionary<string, ISensorState> States { get; }
+        public List<ISensorState> States { get; }
     }
 }

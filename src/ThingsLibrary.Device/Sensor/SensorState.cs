@@ -18,18 +18,10 @@
         public string UnitSymbol { get; init; }
 
         /// <inheritdoc />
-        public DateTime? UpdatedOn { get; set; }
+        public DateTimeOffset? UpdatedOn { get; set; }
 
-        /// <summary>
-        /// Number of digits after the decimal, also how much the data is scaled for telemetry (0 = no scaling)
-        /// </summary>
-        /// <example>1 = for temp so 78.1 becomes 781 in telemetry data</example>
+        /// <inheritdoc />
         public byte ValuePrecision { get; internal set; }
-
-
-        // ============================================================
-        // ABSTRACT
-        // ============================================================
 
         /// <inheritdoc />
         public abstract double Value { get; }
@@ -40,6 +32,8 @@
 
         public override string ToString() => this.ValueString();
 
+        /// <inheritdoc />
+        public bool IsDisabled { get; set; }
 
         public SensorState(string id, string key, bool isImperical)
         {
