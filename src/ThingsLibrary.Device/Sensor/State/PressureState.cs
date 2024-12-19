@@ -2,20 +2,24 @@
 {
     public class PressureState : SensorState
     {
+        /// <summary>
+        /// Native pressure measurement
+        /// </summary>
         public Pressure Pressure { get; private set; } = default;
 
-        public override double Value => (this.IsImperial ? this.Pressure.InchesOfMercury : this.Pressure.Millibars);
-
-        public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")} {this.UnitSymbol}";
-
+        /// <inheritdoc />
         public void Update(Pressure? measurement, DateTimeOffset updatedOn)
         {
-            // nothing to do.. trying to keep the code clean
+            // nothing to do?
+            if (this.IsDisabled) { return; }
             if (measurement is null) { return; }
 
             this.Pressure = measurement.Value;
-            this.UpdatedOn = updatedOn;
+
+            var state = (this.IsImperial ? this.Pressure.InchesOfMercury : this.Pressure.Millibars);            
+            base.Update(state, updatedOn);
         }
+
 
         public PressureState(string id = "Pressure", string key = "p", bool isImperial = false) : base(id, key, isImperial)
         {

@@ -1,4 +1,5 @@
 ﻿using Iot.Device.Vl53L0X;
+using ThingsLibrary.Device.Sensor.Interfaces;
 
 // https://learn.adafruit.com/adafruit-vl53l0x-micro-lidar-distance-sensor-breakout
 
@@ -33,7 +34,7 @@ namespace ThingsLibrary.Device.I2c
 
         /// <inheritdoc/>
         /// <remarks>0x77 is default</remarks>
-        public Vl53l0xSensor(I2cBus i2cBus, int id = 0x29, string name = "Vl5310x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
+        public Vl53l0xSensor(I2cBus i2cBus, int id = 0x29, string name = "vl5310x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {            
             // States
             this.States = new List<ISensorState>()
@@ -79,20 +80,30 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var distance = this.Device.Distance; 
-            if (distance >= (ushort)OperationRange.Maximum) { return false; }
+            try
+            {
+                var distance = this.Device.Distance;
+                if (distance >= (ushort)OperationRange.Maximum) { return false; }
 
-            var updatedOn = DateTime.UtcNow;
+                var updatedOn = DateTime.UtcNow;
 
-            // DISTANCE
-            var lengthUnits = Length.FromMillimeters(distance);
-            this.DistanceState.Update(lengthUnits, updatedOn);
+                // DISTANCE
+                var lengthUnits = Length.FromMillimeters(distance);
+                this.DistanceState.Update(lengthUnits, updatedOn);
 
-            // see if anyone is listening
-            this.UpdatedOn = updatedOn;
-            this.StateChanged?.Invoke(this, this.States);
+                // see if anyone is listening
+                this.UpdatedOn = updatedOn;
+                this.StateChanged?.Invoke(this, this.States);
 
-            return true;
+                // there is always a new reading
+                return true;
+            }
+            catch(Exception ex)
+            {
+                this.ErrorMessage = ex.Message;
+
+                return false;
+            }
         }
     }
 }

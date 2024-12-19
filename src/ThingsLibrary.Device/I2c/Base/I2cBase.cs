@@ -10,7 +10,9 @@ namespace ThingsLibrary.Device.I2c.Base
         public static abstract int? SecondaryAddress { get; set; }
     }
 
-
+    /// <summary>
+    /// Base I2C Inherited Class
+    /// </summary>
     public abstract class I2cBase //: I2cBaseInterface
     {
         //public static int DefaultAddress { get; set; }

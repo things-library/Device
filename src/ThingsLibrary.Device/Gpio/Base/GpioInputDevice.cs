@@ -28,14 +28,15 @@
         /// <param name="controller"><see cref="GpioController"/></param>
         /// <param name="pinId">Pin Number</param>
         /// <param name="name">Name of the device</param>
-        /// <param name="isPullUp">If a pullup resistor should be used</param>
-        /// <param name="isPullDown">If a pulldown resistor should be used</param>
-        public GpioInputDevice(GpioController controller, ushort pinId, string name, bool isPullUp, bool isPullDown) : base(controller, pinId, name)
+        /// <param name="isPullUp">If a pullup resistor should be used, false if a pull down resistor should be used, null if neither</param>
+        public GpioInputDevice(GpioController controller, ushort pinId, string name, bool? isPullUp) : base(controller, pinId, name, (!isPullUp ?? true))
         {
-            if (isPullUp && isPullDown) { throw new ArgumentException("I2cDevice can only be pulled up or pulled down, but not both."); }
-
-            this.IsPullUp = isPullUp;
-            this.IsPullDown = isPullDown;
+            // do we have a value
+            if (isPullUp != null)
+            {
+                this.IsPullUp = isPullUp.Value;
+                this.IsPullDown = !isPullUp.Value;
+            }
         }
 
         /// <summary>

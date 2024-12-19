@@ -1,4 +1,5 @@
 ﻿using Iot.Device.Sht4x;
+using ThingsLibrary.Device.Sensor.Interfaces;
 
 // https://docs.microsoft.com/en-us/dotnet/iot/tutorials/temp-sensor
 // https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout
@@ -14,7 +15,7 @@ namespace ThingsLibrary.Device.I2c
 
         /// <inheritdoc/>
         /// <remarks>0x44 is default</remarks>
-        public Sht4xSensor(I2cBus i2cBus, int id = Sht4x.DefaultI2cAddress, string name = "Sht4x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
+        public Sht4xSensor(I2cBus i2cBus, int id = Sht4x.DefaultI2cAddress, string name = "sht4x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {
             this.MinReadInterval = 7; //157hz = 6.37ms
 
@@ -50,34 +51,43 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var (humidity, temp) = this.Device.ReadHumidityAndTemperature();
-            if (humidity is null || temp is null) { return false; }
-
-            var updatedOn = DateTime.UtcNow;
-            var isStateChanged = false;
-
-            // TEMPERATURE
-            if (temp is not null)
-            { 
-                this.TemperatureState.Update(temp.Value, updatedOn);
-                isStateChanged = true;
-            }
-            
-            // HUMIDITY
-            if (humidity is not null)
+            try
             {
-                this.HumidityState.Update(humidity.Value, updatedOn);
-                isStateChanged = true;
+                var (humidity, temp) = this.Device.ReadHumidityAndTemperature();
+                if (humidity is null || temp is null) { return false; }
+
+                var updatedOn = DateTime.UtcNow;
+                var isStateChanged = false;
+
+                // TEMPERATURE
+                if (temp is not null)
+                {
+                    this.TemperatureState.Update(temp.Value, updatedOn);
+                    isStateChanged = true;
+                }
+
+                // HUMIDITY
+                if (humidity is not null)
+                {
+                    this.HumidityState.Update(humidity.Value, updatedOn);
+                    isStateChanged = true;
+                }
+
+                // see if anyone is listening
+                if (isStateChanged)
+                {
+                    this.UpdatedOn = updatedOn;
+                    this.StateChanged?.Invoke(this, this.States);
+                }
+
+                return isStateChanged;
             }
-
-            // see if anyone is listening
-            if (isStateChanged)
+            catch (Exception ex)
             {
-                this.UpdatedOn = updatedOn;
-                this.StateChanged?.Invoke(this, this.States);
-            }            
-
-            return isStateChanged;
+                this.ErrorMessage = ex.Message;
+                
+                return false;
+            }
         }
     }
 }

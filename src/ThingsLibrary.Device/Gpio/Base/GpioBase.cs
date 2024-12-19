@@ -1,4 +1,6 @@
-﻿namespace ThingsLibrary.Device.Gpio.Base
+﻿using ThingsLibrary.DataType.Events;
+
+namespace ThingsLibrary.Device.Gpio.Base
 {
     /// <summary>
     /// GPIO base class
@@ -8,17 +10,11 @@
         private PinValue _state;
         private readonly object _lockObj = new object();
 
-        #region --- Events ---
-
-        public delegate void StateChangedEventHandler(object sender, PinValue pinValue);
-
         /// <summary>
-        /// Event when the state changes
+        /// Keep track of the bool state
         /// </summary>
-        public StateChangedEventHandler StateChanged { get; set; }
-
-        #endregion
-
+        public BoolState BoolState { get; init; }
+       
         #region --- Interface Properties ---
 
         /// <inheritdoc />        
@@ -36,38 +32,34 @@
             get => _state;
             set
             {
-                if (this.IsChanged) { this.IsChanged = false; }
-                if (_state == value) { return; } //nothing to do, state didn't change
-
                 lock (_lockObj)
                 {
                     _state = value;
-                    this.StateChangedOn = DateTime.UtcNow;
-
-                    // only change the flag if we are in enabled state (not init)
-                    if (this.IsEnabled)
-                    {
-                        this.IsChanged = true;
-                    }
                 }
 
                 // throw events if we are enabled
-                if (this.IsEnabled)
-                {
-                    // see if anyone is listening
-                    this.StateChanged?.Invoke(this, this.State);
-                }
+                if (!this.IsEnabled) { return; }
+
+                var updatedOn = DateTimeOffset.UtcNow;
+
+                // we are using value because other things could be changing the state variable on different threads
+                var isOn = (this.IsNormallyLow ? value == PinValue.High : value == PinValue.Low);
+
+                this.BoolState.Update(isOn, updatedOn);
             }
         }
 
         /// <inheritdoc />        
-        public DateTime StateChangedOn { get; private set; } = DateTime.UtcNow;
+        public DateTimeOffset StateChangedOn => this.BoolState.StateChangedOn;
 
         /// <inheritdoc />        
-        public bool IsChanged { get; private set; } = false;
+        public TimeSpan StateDuration() => this.BoolState.StateDuration();  //technically calculated but basically a property
+
+        /// <inheritdoc />
+        public TimeSpan LastStateDuration => this.BoolState.LastStateDuration;
 
         /// <inheritdoc />        
-        public TimeSpan StateDuration => DateTime.UtcNow.Subtract(this.StateChangedOn);
+        public DateTimeOffset? UpdatedOn => this.BoolState.UpdatedOn;
 
         /// <inheritdoc />        
         public bool IsEnabled { get; set; }
@@ -81,30 +73,37 @@
         #endregion
 
         /// <summary>
+        /// What state is considered 'normal' or default
+        /// </summary>
+        public bool IsNormallyLow { get; private set; } = false;
+        
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="pinId">Board Pin Number</param>
-        protected GpioBase(GpioController gpioController, int pinId, string name)
+        protected GpioBase(GpioController gpioController, int pinId, string name, bool isNormallyLow)
         {
             this.Controller = gpioController ?? throw new ArgumentNullException(nameof(gpioController));
             
             this.Id = pinId;
             this.Name = name;
+            this.IsNormallyLow = isNormallyLow;
         }
 
         /// <summary>
         /// Set up the device and enable it if requested
         /// </summary>
         public abstract void Init(bool enableDevice = true);
-
+        
         /// <summary>
         /// Attempt to fetch the device state
         /// </summary>
         /// <returns>True if successful</returns>
-        public void FetchState()
+        public virtual void FetchState()
         {            
             // get the state off the pin
-            this.State = this.Controller.Read(this.Id);            
+            this.State = this.Controller.Read(this.Id);
         }
 
         /// <summary>
@@ -134,24 +133,37 @@
         }
 
         /// <summary>
-        /// State Duration String (hh:mm:ss) or (dd:hh:mm:ss)
+        /// Convert to a telemetry sentence
         /// </summary>
-        /// <example>01:02:05</example>
-        public string StateDurationStr
+        /// <param name="telemetryItem">Telemetry Item</param>
+        /// <returns></returns>
+        public string ToTelemetryString(string typeKey = null)
         {
-            get
-            {
-                var timeSpan = DateTime.UtcNow.Subtract(this.StateChangedOn);
+            //EXAMPLES:
+            //  $1724387849602|sens|r:1|s:143|p:PPE Mask|q:1|p:000*79
+            //  $1724387850520|sens|r:1|q:2*33
 
-                if (timeSpan.Days > 0)
-                {
-                    return $"{timeSpan.Days:00}:{timeSpan.Hours:00}:{timeSpan.Minutes}:{timeSpan.Seconds:00}";
-                }
-                else
-                {
-                    return $"{timeSpan.Hours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
-                }
-            }
+            var telemetryEvent = this.ToTelemetryEvent(typeKey);
+            
+            return telemetryEvent?.ToString();
+        }
+
+        /// <summary>
+        /// Convert to a Telemetry Event
+        /// </summary>
+        /// <returns></returns>
+        public TelemetryEvent ToTelemetryEvent(string typeKey = null)
+        {
+            if (this.BoolState.UpdatedOn == null) { return null; }
+
+            var telemetryEvent = new TelemetryEvent(typeKey ?? this.Name, this.BoolState.UpdatedOn.Value)
+            {
+                Attributes = new Dictionary<string, string>(1)
+            };
+
+            //telemetryEvent.Attributes[state.Key] = $"{this.}";
+
+            return telemetryEvent;
         }
     }
 }

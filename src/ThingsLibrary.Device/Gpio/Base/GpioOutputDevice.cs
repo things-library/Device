@@ -5,8 +5,6 @@
     /// </summary>
     public class GpioOutputDevice : GpioBase
     {
-        public bool IsNormallyLow { get; private set; } = false;
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -14,9 +12,9 @@
         /// <param name="pinId">Pin Number</param>
         /// <param name="name">Name of the device</param>
         /// <param name="isNormallyLow">If the device is normally low state</param>
-        public GpioOutputDevice(GpioController controller, ushort pinId, string name, bool isNormallyLow) : base(controller, pinId, name)
+        public GpioOutputDevice(GpioController controller, ushort pinId, string name, bool isNormallyLow) : base(controller, pinId, name, isNormallyLow)
         {           
-            this.IsNormallyLow = isNormallyLow;
+            //this.IsNormallyLow = isNormallyLow;
         }
 
         /// <summary>

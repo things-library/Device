@@ -28,18 +28,18 @@
         /// <summary>
         /// When the state last changed
         /// </summary>
-        public DateTime StateChangedOn { get; }
+        public DateTimeOffset StateChangedOn { get; }
 
         /// <summary>
-        /// Has the state changed since the last fetch?
+        /// How long was the last state before this one
         /// </summary>
-        public bool IsChanged { get; } 
+        public TimeSpan LastStateDuration { get; }
 
         /// <summary>
-        /// How long has it been the current state
+        /// Keep track anytime we have pulled the state even if it hasn't changed
         /// </summary>
-        public TimeSpan StateDuration { get; }
-
+        public DateTimeOffset? UpdatedOn { get; }
+                
         /// <summary>
         /// If the device is currently enabled
         /// </summary>
@@ -54,5 +54,11 @@
         /// Is State Low
         /// </summary>
         public bool IsLow { get; }
+
+
+        /// <summary>
+        /// How long has it been the current state
+        /// </summary>
+        public TimeSpan StateDuration();
     }
 }

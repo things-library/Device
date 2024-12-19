@@ -2,20 +2,22 @@
 {
     public class MassConcentrationState : SensorState
     {        
+        /// <summary>
+        /// Particle Count
+        /// </summary>
         public MassConcentration ParticleCount { get; set; }
 
-        public override double Value => this.ParticleCount.Value; //pass through
-                
-        public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")} {this.UnitSymbol}";
-
+        /// <inheritdoc />
         public void Update(MassConcentration? measurement, DateTimeOffset updatedOn)
         {
-            // nothing to do
+            // nothing to do?
+            if (this.IsDisabled) { return; }
             if (measurement is null) { return; }
 
             this.ParticleCount = measurement.Value;
-            this.UpdatedOn = updatedOn;
+            this.Update(measurement.Value, updatedOn);
         }
+
 
         public MassConcentrationState(string id = "Particles", string key = "parts", bool isImperial = false) : base(id, key, isImperial)
         {

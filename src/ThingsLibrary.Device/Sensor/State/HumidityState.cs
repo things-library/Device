@@ -2,19 +2,22 @@
 {
     public class HumidityState : SensorState
     {
+        /// <summary>
+        /// Humidity
+        /// </summary>
         public RelativeHumidity Humidity { get; private set; } = default;
 
-        public override double Value => Humidity.Percent;
-
-        public override string ValueString() => $"{this.Value.ToString($"n{this.ValuePrecision}")}{this.UnitSymbol}";
-
+        /// <inheritdoc />
         public void Update(RelativeHumidity? measurement, DateTimeOffset updatedOn)
         {
-            if(measurement is null) { return; }
+            // nothing to do?
+            if (this.IsDisabled) { return; }
+            if (measurement is null) { return; }
 
             this.Humidity = measurement.Value;
-            this.UpdatedOn = updatedOn;
+            base.Update(measurement.Value.Percent, updatedOn);
         }
+
 
         public HumidityState(string id = "Humidity", string key = "h", bool isImperial = false) : base(id, key, isImperial)
         {

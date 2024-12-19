@@ -1,4 +1,5 @@
 ﻿using Iot.Device.Pmsx003;
+using ThingsLibrary.Device.Sensor.Interfaces;
 
 namespace ThingsLibrary.Device.I2c
 {
@@ -91,7 +92,7 @@ namespace ThingsLibrary.Device.I2c
         public ParticleState Particles100 { get; init; }
 
 
-        public Pmsx003Sensor(I2cBus i2cBus, int id = Pmsx003.DefaultI2cAddress, string name = "Pmsx003", bool isImperial = false) : base(i2cBus, id, name, isImperial)
+        public Pmsx003Sensor(I2cBus i2cBus, int id = Pmsx003.DefaultI2cAddress, string name = "pmsx003", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {
             // States
             this.States = new List<ISensorState>(12)
@@ -141,34 +142,42 @@ namespace ThingsLibrary.Device.I2c
 
         public override bool FetchState()
         {
-            if (!this.IsEnabled) { return false; }
-            if (DateTime.UtcNow < this.NextReadOn) { return false; }
+            try
+            {
+                if (!this.IsEnabled) { return false; }
+                if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var readResult = this.Device.Read();
-            if(readResult == null) { return false; }
-            
-            this.UpdatedOn = DateTimeOffset.UtcNow;
-                        
-            this.StandardPm10.Update(readResult.StandardPm10, this.UpdatedOn);
-            this.StandardPm25.Update(readResult.StandardPm25, this.UpdatedOn);
-            this.StandardPm100.Update(readResult.StandardPm100, this.UpdatedOn);
+                var readResult = this.Device.Read();
+                if (readResult == null) { return false; }
 
-            this.EnvironmentPm10.Update(readResult.EnvironmentPm10, this.UpdatedOn);
-            this.EnvironmentPm25.Update(readResult.EnvironmentPm25, this.UpdatedOn);
-            this.EnvironmentPm100.Update(readResult.EnvironmentPm100, this.UpdatedOn);
-                        
-            this.Particles03.Update(readResult.Particles03, this.UpdatedOn);
-            this.Particles05.Update(readResult.Particles03, this.UpdatedOn);
-            this.Particles10.Update(readResult.Particles10, this.UpdatedOn);
-            this.Particles25.Update(readResult.Particles25, this.UpdatedOn);
-            this.Particles50.Update(readResult.Particles50, this.UpdatedOn);
-            this.Particles100.Update(readResult.Particles100, this.UpdatedOn);
+                this.UpdatedOn = DateTimeOffset.UtcNow;
 
-            // see if anyone is listening
-            this.StateChanged?.Invoke(this, this.States);
+                this.StandardPm10.Update(readResult.StandardPm10, this.UpdatedOn);
+                this.StandardPm25.Update(readResult.StandardPm25, this.UpdatedOn);
+                this.StandardPm100.Update(readResult.StandardPm100, this.UpdatedOn);
 
-            // if we get here the state has changed
-            return true;
-        }        
+                this.EnvironmentPm10.Update(readResult.EnvironmentPm10, this.UpdatedOn);
+                this.EnvironmentPm25.Update(readResult.EnvironmentPm25, this.UpdatedOn);
+                this.EnvironmentPm100.Update(readResult.EnvironmentPm100, this.UpdatedOn);
+
+                this.Particles03.Update(readResult.Particles03, this.UpdatedOn);
+                this.Particles05.Update(readResult.Particles03, this.UpdatedOn);
+                this.Particles10.Update(readResult.Particles10, this.UpdatedOn);
+                this.Particles25.Update(readResult.Particles25, this.UpdatedOn);
+                this.Particles50.Update(readResult.Particles50, this.UpdatedOn);
+                this.Particles100.Update(readResult.Particles100, this.UpdatedOn);
+
+                // see if anyone is listening
+                this.StateChanged?.Invoke(this, this.States);
+
+                // if we get here the state has changed
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.ErrorMessage = ex.Message;
+                return false;
+            }
+        }     
     }    
 }

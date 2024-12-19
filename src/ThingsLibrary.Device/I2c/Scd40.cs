@@ -1,4 +1,5 @@
 ﻿using Iot.Device.Scd4x;
+using ThingsLibrary.Device.Sensor.Interfaces;
 
 namespace ThingsLibrary.Device.I2c
 {
@@ -16,7 +17,7 @@ namespace ThingsLibrary.Device.I2c
         public TemperatureState DewPointState { get; init; }
 
 
-        public Scd40Sensor(I2cBus i2cBus, int id = 0x62, string name = "Scd40", bool isImperial = false) : base(i2cBus, id, name, isImperial)
+        public Scd40Sensor(I2cBus i2cBus, int id = 0x62, string name = "scd40", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {
             // States            
             this.States = new List<ISensorState>(5)
@@ -26,8 +27,8 @@ namespace ThingsLibrary.Device.I2c
                 {   this.HumidityState = new HumidityState(isImperial: isImperial)  },
                 
                 // Calculated
-                {   this.HeatIndexState = new TemperatureState("Heat Index", "heat", isImperial: isImperial) },
-                {   this.DewPointState = new TemperatureState("Dew Point", "dew", isImperial: isImperial) }
+                {   this.HeatIndexState = new TemperatureState("Heat Index", "hx", isImperial: isImperial) { IsDisabled = true } },
+                {   this.DewPointState = new TemperatureState("Dew Point", "dp", isImperial: isImperial) { IsDisabled = true } }
             };
         }
 
@@ -59,50 +60,65 @@ namespace ThingsLibrary.Device.I2c
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            var readResult = this.Device.ReadPeriodicMeasurement();
-            
-            var updatedOn = DateTime.UtcNow;
-            var isStateChanged = false;
-
-            // CO2
-            if (readResult.CarbonDioxide.HasValue)
+            try
             {
-                this.Co2State.Update(readResult.CarbonDioxide.Value, updatedOn);
-                isStateChanged = true;
-            }
+                var readResult = this.Device.ReadPeriodicMeasurement();
 
-            // TEMPERATURE
-            if (readResult.Temperature.HasValue)
+                var updatedOn = DateTime.UtcNow;
+                var isStateChanged = false;
+
+                // CO2
+                if (readResult.CarbonDioxide.HasValue)
+                {
+                    this.Co2State.Update(readResult.CarbonDioxide.Value, updatedOn);
+                    isStateChanged = true;
+                }
+
+                // TEMPERATURE
+                if (readResult.Temperature.HasValue)
+                {
+                    this.TemperatureState.Update(readResult.Temperature.Value, updatedOn);
+                    isStateChanged = true;
+                }
+
+                // HUMIDITY
+                if (readResult.RelativeHumidity.HasValue)
+                {
+                    this.HumidityState.Update(readResult.RelativeHumidity.Value, updatedOn);
+                    isStateChanged = true;
+                }
+
+                // if all we need it temp and humidity then great!
+                if (readResult.Temperature.HasValue && readResult.RelativeHumidity.HasValue)
+                {
+                    // only calculate if we actually want it
+                    if (!this.HeatIndexState.IsDisabled)
+                    {
+                        var heatIndex = WeatherHelper.CalculateHeatIndex(this.TemperatureState.Temperature, this.HumidityState.Humidity);
+                        this.HeatIndexState.Update(heatIndex, updatedOn);
+                    }
+
+                    if (!this.DewPointState.IsDisabled)
+                    {
+                        var dewPoint = WeatherHelper.CalculateDewPoint(this.TemperatureState.Temperature, this.HumidityState.Humidity);
+                        this.DewPointState.Update(dewPoint, updatedOn);
+                    }
+                }
+
+                // see if anyone is listening
+                if (isStateChanged)
+                {
+                    this.UpdatedOn = updatedOn;
+                    this.StateChanged?.Invoke(this, this.States);
+                }
+
+                return isStateChanged;
+            }
+            catch (Exception ex)
             {
-                this.TemperatureState.Update(readResult.Temperature.Value, updatedOn);
-                isStateChanged = true;
+                this.ErrorMessage = ex.Message;
+                return false;
             }
-
-            // HUMIDITY
-            if (readResult.RelativeHumidity.HasValue)
-            {
-                this.HumidityState.Update(readResult.RelativeHumidity.Value, updatedOn);
-                isStateChanged = true;
-            }
-
-            // if all we need it temp and humidity then great!
-            if (readResult.Temperature.HasValue && readResult.RelativeHumidity.HasValue)
-            {
-                var heatIndex = WeatherHelper.CalculateHeatIndex(this.TemperatureState.Temperature, this.HumidityState.Humidity);
-                this.HeatIndexState.Update(heatIndex, updatedOn);
-
-                var dewPoint = WeatherHelper.CalculateDewPoint(this.TemperatureState.Temperature, this.HumidityState.Humidity);
-                this.DewPointState.Update(dewPoint, updatedOn);
-            }
-
-            // see if anyone is listening
-            if (isStateChanged)
-            {
-                this.UpdatedOn = updatedOn;
-                this.StateChanged?.Invoke(this, this.States);
-            }
-
-            return isStateChanged;
         }
     }
 }

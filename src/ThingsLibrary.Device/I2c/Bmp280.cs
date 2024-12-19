@@ -1,5 +1,6 @@
 ﻿using Iot.Device.Bmxx80;
 using Iot.Device.Bmxx80.FilteringMode;
+using ThingsLibrary.Device.Sensor.Interfaces;
 
 // https://docs.microsoft.com/en-us/dotnet/iot/tutorials/temp-sensor
 // https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout
@@ -16,7 +17,7 @@ namespace ThingsLibrary.Device.I2c
 
         /// <inheritdoc/>
         /// <remarks>0x77 is default, 0x76 is secondary</remarks>
-        public Bmp280Sensor(I2cBus i2cBus, int id = 0x77, string name = "Bmp280", bool isImperial = false) : base(i2cBus, id, name, isImperial)
+        public Bmp280Sensor(I2cBus i2cBus, int id = 0x77, string name = "bmp280", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {
             this.MinReadInterval = 7; //157hz = 6.37ms
 
@@ -57,42 +58,50 @@ namespace ThingsLibrary.Device.I2c
         {
             if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
-            
-            var readResult = Device.Read();
-            if (readResult == null) { return false; }
 
-            var updatedOn = DateTime.UtcNow;
-            var isStateChanged = false;
-
-            // TEMPERATURE
-            if (readResult.Temperature is not null)
+            try
             {
-                this.TemperatureState.Update(readResult.Temperature.Value, updatedOn);
-                isStateChanged = true;
+                var readResult = Device.Read();
+                if (readResult == null) { return false; }
+
+                var updatedOn = DateTime.UtcNow;
+                var isStateChanged = false;
+
+                // TEMPERATURE
+                if (readResult.Temperature is not null)
+                {
+                    this.TemperatureState.Update(readResult.Temperature.Value, updatedOn);
+                    isStateChanged = true;
+                }
+
+                // PRESSURE
+                if (readResult.Pressure is not null)
+                {
+                    this.PressureState.Update(readResult.Pressure, updatedOn);
+                    isStateChanged = true;
+                }
+
+                // ALTITUDE
+                if (isStateChanged && !this.AltitudeState.IsDisabled && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
+                {
+                    var altitude = WeatherHelper.CalculateAltitude(this.PressureState.Pressure, this.TemperatureState.Temperature);
+                    this.AltitudeState.Update(altitude, updatedOn);
+                }
+
+                // see if anyone is listening
+                if (isStateChanged)
+                {
+                    this.UpdatedOn = updatedOn;
+                    this.StateChanged?.Invoke(this, this.States);
+                }
+
+                return isStateChanged;
             }
-            
-            // PRESSURE
-            if (readResult.Pressure is not null)
+            catch (Exception ex)
             {
-                this.PressureState.Update(readResult.Pressure, updatedOn);
-                isStateChanged = true;
+                this.ErrorMessage = ex.Message;
+                return false;
             }
-
-            // ALTITUDE
-            if (isStateChanged && !this.AltitudeState.IsDisabled && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
-            {
-                var altitude = WeatherHelper.CalculateAltitude(this.PressureState.Pressure, this.TemperatureState.Temperature);
-                this.AltitudeState.Update(altitude, updatedOn);
-            }
-
-            // see if anyone is listening
-            if (isStateChanged)
-            {
-                this.UpdatedOn = updatedOn;
-                this.StateChanged?.Invoke(this, this.States);
-            }            
-
-            return isStateChanged;
         }
     }
 }

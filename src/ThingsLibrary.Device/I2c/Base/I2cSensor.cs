@@ -1,8 +1,5 @@
-﻿using System.Text;
-using ThingsLibrary.DataType.Events;
-using ThingsLibrary.Schema.Library;
-using ThingsLibrary.Schema.Library.Extensions;
-
+﻿using ThingsLibrary.DataType.Events;
+using ThingsLibrary.Device.Sensor.Interfaces;
 using SMath = System.Math;
 
 namespace ThingsLibrary.Device.I2c.Base
@@ -96,38 +93,6 @@ namespace ThingsLibrary.Device.I2c.Base
             return (long)SMath.Round(scaledValue);
         }
 
-        ///// <summary>
-        ///// Convert to a telemetry sentence
-        ///// </summary>
-        ///// <param name="telemetryItem">Telemetry Item</param>
-        ///// <returns></returns>
-        //public string ToTelemetryString(string typeKey = null)
-        //{
-        //    //EXAMPLES:
-        //    //  $1724387849602|sens|r:1|s:143|p:PPE Mask|q:1|p:000*79
-        //    //  $1724387850520|sens|r:1|q:2*33
-
-        //    var sentence = new StringBuilder();
-
-        //    // time + sentence ID 
-        //    sentence.Append($"${this.UpdatedOn.ToUnixTimeMilliseconds()}|{typeKey ?? this.Name}");
-
-        //    // add the states
-        //    foreach (var state in this.States)
-        //    {
-        //        // nothing to do?
-        //        if (state.IsDisabled) { continue; }
-        //        if (state.UpdatedOn != this.UpdatedOn) { continue; }
-
-        //        sentence.Append($"|{state.Key}:{this.ScaleValue(state.Value, state.ValuePrecision)}");
-        //    }
-
-        //    //Add checksum
-        //    sentence.AppendChecksum();
-
-        //    return sentence.ToString();
-        //}
-
         /// <summary>
         /// Convert to a telemetry sentence
         /// </summary>
@@ -159,7 +124,7 @@ namespace ThingsLibrary.Device.I2c.Base
             {
                 if (state.IsDisabled) { continue; }
 
-                telemetryEvent.Attributes[state.Key] = $"{this.ScaleValue(state.Value, state.ValuePrecision)}";
+                telemetryEvent.Attributes[state.Key] = $"{this.ScaleValue(state.CurrentState, state.ValuePrecision)}";
             }
 
             return telemetryEvent;

@@ -1,4 +1,4 @@
-﻿namespace ThingsLibrary.Device.Sensor
+﻿namespace ThingsLibrary.Device.Sensor.Interfaces
 {
     /// <summary>
     /// Sensor Overall State
@@ -9,7 +9,7 @@
         /// Last State Fetch Timestamp
         /// </summary>
         public DateTimeOffset UpdatedOn { get; }
-                
+
         /// <summary>
         /// Collection of States
         /// </summary>

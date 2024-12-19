@@ -1,4 +1,5 @@
 ﻿using Iot.Device.Sen5x;
+using ThingsLibrary.Device.Sensor.Interfaces;
 
 namespace ThingsLibrary.Device.I2c
 {
@@ -61,7 +62,7 @@ namespace ThingsLibrary.Device.I2c
         public HumidityState HumidityState { get; init; }
 
 
-        public Sen5xSensor(I2cBus i2cBus, int id = Sen5x.DefaultI2cAddress, string name = "Sen5x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
+        public Sen5xSensor(I2cBus i2cBus, int id = Sen5x.DefaultI2cAddress, string name = "sen5x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
         {
             // States
             this.States = new List<ISensorState>(8)
@@ -99,41 +100,46 @@ namespace ThingsLibrary.Device.I2c
 
         public override bool FetchState()
         {
-            if (!this.IsEnabled)
-            {
-                this.ErrorMessage = "Device not enabled.";
-                return false;
-            }
-
+            if (!this.IsEnabled) { return false; }
             if (DateTime.UtcNow < this.NextReadOn) { return false; }
 
-            if (!this.Device.ReadDataReadyFlag())
+            try
             {
-                this.ErrorMessage = "Data Not Ready!";
+                if (!this.Device.ReadDataReadyFlag())
+                {
+                    this.ErrorMessage = "Data Not Ready!";
+                    return false;
+                }
+
+                var readResult = this.Device.ReadMeasurement();
+                if (readResult == null) { return false; }
+
+                this.UpdatedOn = DateTimeOffset.UtcNow;
+
+                this.Pm1.Update(readResult.Pm1_0, this.UpdatedOn);
+                this.Pm2_5.Update(readResult.Pm2_5, this.UpdatedOn);
+                this.Pm4.Update(readResult.Pm4_0, this.UpdatedOn);
+                this.Pm10.Update(readResult.Pm10_0, this.UpdatedOn);
+
+                this.VocIndex.Update(readResult.VocIndex, this.UpdatedOn);
+                this.NoxIndex.Update(readResult.NoxIndex, this.UpdatedOn);
+
+                this.TemperatureState.Update(readResult.Temperature, this.UpdatedOn);
+                this.HumidityState.Update(readResult.Humidity, this.UpdatedOn);
+
+                // see if anyone is listening
+                this.StateChanged?.Invoke(this, this.States);
+
+                // if we get here the state has changed
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                this.ErrorMessage = ex.Message;
+
                 return false;
             }
-
-            var readResult = this.Device.ReadMeasurement();
-            if (readResult == null) { return false; }
-
-            this.UpdatedOn = DateTimeOffset.UtcNow;
-
-            this.Pm1.Update(readResult.Pm1_0, this.UpdatedOn);
-            this.Pm2_5.Update(readResult.Pm2_5, this.UpdatedOn);
-            this.Pm4.Update(readResult.Pm4_0, this.UpdatedOn);
-            this.Pm10.Update(readResult.Pm10_0, this.UpdatedOn);
-
-            this.VocIndex.Update(readResult.VocIndex, this.UpdatedOn);
-            this.NoxIndex.Update(readResult.NoxIndex, this.UpdatedOn);
-
-            this.TemperatureState.Update(readResult.Temperature, this.UpdatedOn);
-            this.HumidityState.Update(readResult.Humidity, this.UpdatedOn);
-
-            // see if anyone is listening
-            this.StateChanged?.Invoke(this, this.States);
-
-            // if we get here the state has changed
-            return true;
         }
     }
 }

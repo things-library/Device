@@ -4,19 +4,7 @@
     /// Basic switch like sensor that is either on or off.
     /// </summary>
     public sealed class BoolSensor : Base.GpioInputDevice
-    {
-        /// <summary>
-        /// Label to use for a normal state
-        /// </summary>
-        /// <example>Closed</example>
-        public string NormalLabel { get; set; } = "Off";
-        
-        /// <summary>
-        /// Label to use for a fault state
-        /// </summary>
-        /// <example>Open</example>
-        public string FaultLabel { get; set; } = "On";
-
+    {                
         /// <summary>
         /// Specifies that a 'low' state is considered fault.
         /// </summary>
@@ -27,13 +15,11 @@
         /// </summary>
         /// <param name="controller"><see cref="GpioController"/></param>
         /// <param name="pinId">Board Pin ID</param>
-        /// <param name="isLowFault">Define what state is considered a 'fault' state based on how sensor is being used.</param>
-        /// <param name="isPullUp">If a pull up resistor should be used.</param>
-        /// <param name="isPullDown">If a pulldown resistor should be used.</param>
-        public BoolSensor(GpioController controller, ushort pinId, string name, bool isPullUp, bool isPullDown, bool isLowFault) : base(controller, pinId, name, isPullUp, isPullDown)
+        /// <param name="isPullUp">If a pull up resistor should be used. False = pull down resistor, null = floating</param>
+        public BoolSensor(GpioController controller, ushort pinId, string name, bool? isPullUp) : base(controller, pinId, name, isPullUp)
         {
             // bool sensor specific
-            this.IsLowFault = isLowFault;
+            this.IsLowFault = !this.IsPullUp;
         }
 
         /// <summary>
@@ -46,20 +32,11 @@
         /// </summary>
         /// <remarks>Example: With a pullup resistor, the default/normal value is HIGH, goes LOW when sensor is 'normal' in NC state</remarks>
         public bool IsFaulted => (this.State == (this.IsLowFault ? PinValue.Low : PinValue.High));
-
-        /// <summary>
-        /// Label for normal state
-        /// </summary>
-        public string NormalStateLabel { get; set; } = "Off";
-
-        /// <summary>
-        /// Label for faulted state (not normal state)
-        /// </summary>
-        public string FaultedStateLabel { get; set; } = "On";
-
+                
         /// <summary>
         /// Label for the current state
         /// </summary>
-        public string StateStr => (this.IsNormal ? this.NormalStateLabel : this.FaultedStateLabel);                
+        public string StateStr => (this.IsNormal ? this.BoolState.OffLabel : this.BoolState.OnLabel);
+
     }
 }

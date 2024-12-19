@@ -4,8 +4,12 @@ using Iot.Device.Board;
 using Ft = Iot.Device.FtCommon;
 
 using ThingsLibrary.Device.I2c;
+using System.Device.Gpio;
+using System.Device.I2c;
+
+using ThingsLibrary.Device.Gpio;
 using ThingsLibrary.Device.I2c.Base;
-using System.Text.Json;
+using ThingsLibrary.DataType.Extensions;
 
 namespace Device.Tester
 {
@@ -21,7 +25,7 @@ namespace Device.Tester
             Log.Information("================================================================================");
             Log.Information("Getting GPIO Controller devices...");
             var devices = Ft.FtCommon.GetDevices();
-            
+
             if (devices.Any())
             {
                 foreach (var device in devices)
@@ -36,9 +40,50 @@ namespace Device.Tester
             }
 
             // pick just the first one
-            var ft232h = new Ft232HDevice(devices.First());
-            var i2cBus = ft232h.CreateOrGetI2cBus(0);
+            var ftDevice = new Ft232HDevice(devices.First());
 
+            var gpioController = ftDevice.CreateGpioController();
+            GpioTests(gpioController);
+
+            //var i2cBus = ftDevice.CreateOrGetI2cBus(0);
+            //I2cTests(i2cBus);
+        }
+
+        public static void GpioTests(GpioController gpioController)
+        {
+            var sensors = new List<BoolSensor>();
+            sensors.Add(new BoolSensor(gpioController, 0, "Motion", false));
+
+            Log.Information("Initializing {SensorCount} Sensors...", sensors.Count);
+
+            // Initialize all the sensors
+            sensors.ForEach((sensor) => { sensor.Init(); });
+
+            Log.Information("================================================================================");
+            Log.Information("Reading Sensor Telemetry...");
+                        
+            // DO SENSOR LOOP
+            while (true)
+            {
+                foreach (var sensor in sensors)
+                {
+                    if (!sensor.IsEnabled)
+                    {
+                        Log.Information($"{sensor.Name}: Not Enabled");
+                        continue;
+                    }
+
+                    sensor.FetchState();
+
+                    Log.Information($"{sensor.Name}: {sensor.StateStr} ({sensor.BoolState.StateDuration().ToHHMMSS()})");
+                }
+
+                Thread.Sleep(2000);
+            }
+        }
+
+        public static void I2cTests(I2cBus i2cBus) 
+        {         
             // Bus scan to show that the device(s) are plugged in and seen
             Log.Information("================================================================================");
             Log.Information("Performing I2C Bus Scan...");
@@ -63,13 +108,13 @@ namespace Device.Tester
             // - 0x76 - BMP280 (T,P)
 
             var sensors = new List<I2cSensor>();
-            //sensors.Add(new Bme680Sensor(i2cBus, 0x76, "BME680", true));
-            //sensors.Add(new Scd40Sensor(i2cBus, 0x62));
-            //sensors.Add(new Bmp280Sensor(i2cBus, 0x77));
-            //sensors.Add(new Sht4xSensor(i2cBus, 0x44));
-            //sensors.Add(new Vl53l0xSensor(i2cBus, 0x29));
+            sensors.Add(new Bme680Sensor(i2cBus, 0x76, "BME680", true));
+            sensors.Add(new Scd40Sensor(i2cBus, 0x62));
+            sensors.Add(new Bmp280Sensor(i2cBus, 0x77));
+            sensors.Add(new Sht4xSensor(i2cBus, 0x44));
+            sensors.Add(new Vl53l0xSensor(i2cBus, 0x29));
             //sensors.Add(new Pmsx003Sensor(i2cBus));
-            sensors.Add(new Sen5xSensor(i2cBus));
+            //sensors.Add(new Sen5xSensor(i2cBus));
 
             // M5 ENV IV Sensor Module
             //sensors.Add(new Sht4xSensor(i2cBus, 0x44, "SHT41", true));
@@ -80,37 +125,29 @@ namespace Device.Tester
             // Initialize all the sensors
             sensors.ForEach((sensor) => { sensor.Init(); });
 
+            // show any errors 
+            foreach (var sensor in sensors)
+            {
+                if (sensor.IsEnabled) { continue; }
+                if (string.IsNullOrEmpty(sensor.ErrorMessage)) { continue; }
+
+                Log.Information($"{sensor.Name}: {sensor.ErrorMessage} (Not Enabled)");
+            }
+
             Log.Information("================================================================================");
             Log.Information("Reading Sensor Telemetry...");
-
-            var jsonSettings = new JsonSerializerOptions()
-            {
-                WriteIndented = true
-            };
-
+                        
             // DO SENSOR LOOP
             while (true)            
             {
-                foreach(var sensor in sensors)
+                foreach (var sensor in sensors)
                 {
-                    if (!sensor.IsEnabled)
-                    {
-                        Log.Information($"{sensor.Name}: {sensor.ErrorMessage} (Not Enabled)");
-                        continue;
-                    }
+                    if (!sensor.IsEnabled) { continue; }
 
                     if (sensor.FetchState())
                     {
                         //Log.Information($"{sensor.Name}:");
-                        Log.Information(sensor.ToTelemetryString());
-
-                        var item = sensor.ToTelemetryEvent();
-                        Log.Information(JsonSerializer.Serialize(item, jsonSettings));
-
-                        //foreach (var state in sensor.States)
-                        //{
-                        //    Log.Information($" - {state}");
-                        //}
+                        Log.Information(sensor.ToTelemetryString());                        
                     }
                 }
 
