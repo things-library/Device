@@ -57,32 +57,32 @@ namespace ThingsLibrary.Device.I2c
         public override bool FetchState()
         {
             if (!this.IsEnabled) { return false; }
-            if (DateTime.UtcNow < this.NextReadOn) { return false; }
+            if (DateTimeOffset.UtcNow < this.NextReadOn) { return false; }
 
             try
             {
                 var readResult = Device.Read();
                 if (readResult == null) { return false; }
 
-                var updatedOn = DateTime.UtcNow;
+                var updatedOn = DateTimeOffset.UtcNow;
                 var isStateChanged = false;
 
                 // TEMPERATURE
-                if (readResult.Temperature is not null)
+                if (readResult.Temperature is not null && this.TemperatureState.IsDisabled)
                 {
                     this.TemperatureState.Update(readResult.Temperature.Value, updatedOn);
                     isStateChanged = true;
                 }
 
                 // PRESSURE
-                if (readResult.Pressure is not null)
+                if (readResult.Pressure is not null && !this.PressureState.IsDisabled)
                 {
                     this.PressureState.Update(readResult.Pressure, updatedOn);
                     isStateChanged = true;
                 }
 
-                // ALTITUDE
-                if (isStateChanged && !this.AltitudeState.IsDisabled && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
+                // ALTITUDE (the other sensors can't be disabled as they are used to calculate this one)
+                if (isStateChanged && !this.AltitudeState.IsDisabled && !this.TemperatureState.IsDisabled && !this.PressureState.IsDisabled)
                 {
                     var altitude = WeatherHelper.CalculateAltitude(this.PressureState.Pressure, this.TemperatureState.Temperature);
                     this.AltitudeState.Update(altitude, updatedOn);

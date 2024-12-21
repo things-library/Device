@@ -4,12 +4,6 @@
 
 namespace ThingsLibrary.Device.I2c.Base
 {
-    public interface I2cBaseInterface
-    {
-        public static abstract int DefaultAddress { get; set; }
-        public static abstract int? SecondaryAddress { get; set; }
-    }
-
     /// <summary>
     /// Base I2C Inherited Class
     /// </summary>
@@ -18,7 +12,14 @@ namespace ThingsLibrary.Device.I2c.Base
         //public static int DefaultAddress { get; set; }
         //public static int? SecondaryAddress { get; set; }
 
+        /// <summary>
+        /// I2C Bus
+        /// </summary>
         public I2cBus I2cBus { get; init; }
+
+        /// <summary>
+        /// I2C Device
+        /// </summary>
         public I2cDevice I2cDevice { get; set; }
 
         /// <summary>

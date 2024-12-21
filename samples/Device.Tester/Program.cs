@@ -10,6 +10,8 @@ using System.Device.I2c;
 using ThingsLibrary.Device.Gpio;
 using ThingsLibrary.Device.I2c.Base;
 using ThingsLibrary.DataType.Extensions;
+using ThingsLibrary.Device.Sensor.Events;
+using System.Runtime.CompilerServices;
 
 namespace Device.Tester
 {
@@ -57,7 +59,13 @@ namespace Device.Tester
             Log.Information("Initializing {SensorCount} Sensors...", sensors.Count);
 
             // Initialize all the sensors
-            sensors.ForEach((sensor) => { sensor.Init(); });
+            sensors.ForEach((sensor) => 
+            { 
+                sensor.Init(); 
+                
+            });
+
+            sensors[0].BoolState.StateChanged += StateChanged;
 
             Log.Information("================================================================================");
             Log.Information("Reading Sensor Telemetry...");
@@ -79,6 +87,21 @@ namespace Device.Tester
                 }
 
                 Thread.Sleep(2000);
+            }
+        }
+
+        public static void StateChanged(object sender, StateEvent e)
+        {
+            //this.CurrentState.ToString($"n{this.ValuePrecision}")}
+
+            if(e.LastState != null)
+            {
+                Log.Information($"{e.Id}: {e.State} (Last: {e.LastState?.ToString($"n{e.ValuePrecision}")}, Dur: {e.LastStateDuration.ToHHMMSS()}");
+                
+            }
+            else
+            {
+                Log.Information($"{e.Id}: {e.State}");
             }
         }
 

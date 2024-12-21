@@ -40,7 +40,7 @@ namespace ThingsLibrary.Device.Sensor
         public bool IsDisabled { get; set; }
 
         /// <inheritdoc />
-        public DateTimeOffset? UpdatedOn { get; internal set; }
+        public DateTimeOffset UpdatedOn { get; internal set; }
 
         // ================================================================================
         // CURRENT STATE 

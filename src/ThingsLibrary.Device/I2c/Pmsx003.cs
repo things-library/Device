@@ -142,11 +142,11 @@ namespace ThingsLibrary.Device.I2c
 
         public override bool FetchState()
         {
+            if (!this.IsEnabled) { return false; }
+            if (DateTimeOffset.UtcNow < this.NextReadOn) { return false; }
+
             try
             {
-                if (!this.IsEnabled) { return false; }
-                if (DateTime.UtcNow < this.NextReadOn) { return false; }
-
                 var readResult = this.Device.Read();
                 if (readResult == null) { return false; }
 

@@ -36,7 +36,7 @@
             foreach(var sensor in this.Sensors)
             {
                 if (sensor.ShutdownPinId < 0) { continue; }
-                if (sensor.ShutdownPinId == exceptPinId) { continue; }
+                if (sensor.ShutdownPinId == exceptPinId) { continue; }  // skip this one?
 
                 //pull all the shutdown pins low
                 this.Controller.Write(sensor.ShutdownPinId, PinValue.Low);

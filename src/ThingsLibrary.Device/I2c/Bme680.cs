@@ -60,7 +60,7 @@ namespace ThingsLibrary.Device.I2c
         public override bool FetchState()
         {
             if (!this.IsEnabled) { return false; }
-            if (DateTime.UtcNow < this.NextReadOn) { return false; }
+            if (DateTimeOffset.UtcNow < this.NextReadOn) { return false; }
 
             try
             {
@@ -99,7 +99,7 @@ namespace ThingsLibrary.Device.I2c
                 }
 
                 // CALCULATE ALTITUDE
-                if (isStateChanged && !this.AltitudeState.IsDisabled && this.TemperatureState.UpdatedOn is not null && this.PressureState.UpdatedOn is not null)
+                if (isStateChanged && !this.AltitudeState.IsDisabled && !this.TemperatureState.IsDisabled && !this.PressureState.IsDisabled)
                 {
                     var altitude = WeatherHelper.CalculateAltitude(this.PressureState.Pressure, this.TemperatureState.Temperature);
                     this.AltitudeState.Update(altitude, updatedOn);

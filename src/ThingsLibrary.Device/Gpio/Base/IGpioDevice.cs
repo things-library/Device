@@ -38,7 +38,7 @@
         /// <summary>
         /// Keep track anytime we have pulled the state even if it hasn't changed
         /// </summary>
-        public DateTimeOffset? UpdatedOn { get; }
+        public DateTimeOffset UpdatedOn { get; }
                 
         /// <summary>
         /// If the device is currently enabled

@@ -5,6 +5,7 @@ namespace ThingsLibrary.Device.Sensor.State
     /// <summary>
     /// Basic boolean state for keeping track of two states.
     /// </summary>
+    /// <example>Door Open/Close, Motion Detected/Not Detected</example>
     public class BoolState : SensorState
     {
         /// <summary>

@@ -1,6 +1,8 @@
-﻿namespace ThingsLibrary.Device.Gpio.Base
+﻿using ThingsLibrary.Device.Sensor.Interfaces;
+
+namespace ThingsLibrary.Device.Gpio.Base
 {
-    public class GpioInputDevice : GpioBase
+    public class GpioInputDevice : GpioBase, ISensorStates
     {
         #region --- Events --- 
 
@@ -23,6 +25,11 @@
         public bool IsPullDown { get; set; }
 
         /// <summary>
+        /// Collection of States
+        /// </summary>
+        public List<ISensorState> States { get; set; } = new List<ISensorState>();
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="controller"><see cref="GpioController"/></param>
@@ -37,6 +44,9 @@
                 this.IsPullUp = isPullUp.Value;
                 this.IsPullDown = !isPullUp.Value;
             }
+
+            // States            
+            this.States = new List<ISensorState>(1) { { this.BoolState } };
         }
 
         /// <summary>

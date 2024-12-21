@@ -78,7 +78,7 @@ namespace ThingsLibrary.Device.I2c
         public override bool FetchState()
         {
             if (!this.IsEnabled) { return false; }
-            if (DateTime.UtcNow < this.NextReadOn) { return false; }
+            if (DateTimeOffset.UtcNow < this.NextReadOn) { return false; }
 
             try
             {

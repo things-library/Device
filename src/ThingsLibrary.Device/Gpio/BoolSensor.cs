@@ -1,4 +1,6 @@
-﻿namespace ThingsLibrary.Device.Gpio
+﻿using ThingsLibrary.Device.Sensor.Interfaces;
+
+namespace ThingsLibrary.Device.Gpio
 {
     /// <summary>
     /// Basic switch like sensor that is either on or off.
@@ -19,7 +21,7 @@
         public BoolSensor(GpioController controller, ushort pinId, string name, bool? isPullUp) : base(controller, pinId, name, isPullUp)
         {
             // bool sensor specific
-            this.IsLowFault = !this.IsPullUp;
+            this.IsLowFault = !this.IsPullUp;            
         }
 
         /// <summary>
@@ -37,6 +39,12 @@
         /// Label for the current state
         /// </summary>
         public string StateStr => (this.IsNormal ? this.BoolState.OffLabel : this.BoolState.OnLabel);
+
+
+        /// <summary>
+        /// Last State Fetch Timestamp
+        /// </summary>
+        //public DateTimeOffset UpdatedOn { get; internal set; }       
 
     }
 }

@@ -59,7 +59,7 @@ namespace ThingsLibrary.Device.Gpio.Base
         public TimeSpan LastStateDuration => this.BoolState.LastStateDuration;
 
         /// <inheritdoc />        
-        public DateTimeOffset? UpdatedOn => this.BoolState.UpdatedOn;
+        public DateTimeOffset UpdatedOn => this.BoolState.UpdatedOn;
 
         /// <inheritdoc />        
         public bool IsEnabled { get; set; }
@@ -132,38 +132,36 @@ namespace ThingsLibrary.Device.Gpio.Base
             this.FetchState();
         }
 
-        /// <summary>
-        /// Convert to a telemetry sentence
-        /// </summary>
-        /// <param name="telemetryItem">Telemetry Item</param>
-        /// <returns></returns>
-        public string ToTelemetryString(string typeKey = null)
-        {
-            //EXAMPLES:
-            //  $1724387849602|sens|r:1|s:143|p:PPE Mask|q:1|p:000*79
-            //  $1724387850520|sens|r:1|q:2*33
+        ///// <summary>
+        ///// Convert to a telemetry sentence
+        ///// </summary>
+        ///// <param name="telemetryItem">Telemetry Item</param>
+        ///// <returns></returns>
+        //public string ToTelemetryString(string typeKey = null)
+        //{
+        //    //EXAMPLES:
+        //    //  $1724387849602|sens|r:1|s:143|p:PPE Mask|q:1|p:000*79
+        //    //  $1724387850520|sens|r:1|q:2*33
 
-            var telemetryEvent = this.ToTelemetryEvent(typeKey);
+        //    var telemetryEvent = this.ToTelemetryEvent(typeKey);
             
-            return telemetryEvent?.ToString();
-        }
+        //    return telemetryEvent?.ToString();
+        //}
 
-        /// <summary>
-        /// Convert to a Telemetry Event
-        /// </summary>
-        /// <returns></returns>
-        public TelemetryEvent ToTelemetryEvent(string typeKey = null)
-        {
-            if (this.BoolState.UpdatedOn == null) { return null; }
+        ///// <summary>
+        ///// Convert to a Telemetry Event
+        ///// </summary>
+        ///// <returns></returns>
+        //public TelemetryEvent ToTelemetryEvent(string typeKey = null)
+        //{
+        //    var telemetryEvent = new TelemetryEvent(typeKey ?? this.Name, this.BoolState.UpdatedOn)
+        //    {
+        //        Attributes = new Dictionary<string, string>(1)
+        //    };
 
-            var telemetryEvent = new TelemetryEvent(typeKey ?? this.Name, this.BoolState.UpdatedOn.Value)
-            {
-                Attributes = new Dictionary<string, string>(1)
-            };
+        //    //telemetryEvent.Attributes[state.Key] = $"{this.}";
 
-            //telemetryEvent.Attributes[state.Key] = $"{this.}";
-
-            return telemetryEvent;
-        }
+        //    return telemetryEvent;
+        //}
     }
 }

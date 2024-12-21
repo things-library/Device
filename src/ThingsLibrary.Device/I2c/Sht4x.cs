@@ -49,14 +49,14 @@ namespace ThingsLibrary.Device.I2c
         public override bool FetchState()
         {
             if (!this.IsEnabled) { return false; }
-            if (DateTime.UtcNow < this.NextReadOn) { return false; }
+            if (DateTimeOffset.UtcNow < this.NextReadOn) { return false; }
 
             try
             {
                 var (humidity, temp) = this.Device.ReadHumidityAndTemperature();
                 if (humidity is null || temp is null) { return false; }
 
-                var updatedOn = DateTime.UtcNow;
+                var updatedOn = DateTimeOffset.UtcNow;
                 var isStateChanged = false;
 
                 // TEMPERATURE

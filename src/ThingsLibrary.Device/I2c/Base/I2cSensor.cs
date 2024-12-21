@@ -35,7 +35,7 @@ namespace ThingsLibrary.Device.I2c.Base
         /// <summary>
         /// Next time the sensor should be read
         /// </summary>
-        public DateTime NextReadOn { get; set; } = DateTime.MinValue;
+        public DateTimeOffset NextReadOn { get; set; } = DateTimeOffset.UtcNow; // until told otherwise
 
         /// <summary>
         /// Last time the sensor was read.
@@ -63,16 +63,27 @@ namespace ThingsLibrary.Device.I2c.Base
 
         public override string ToString() => String.Join(", ", this.States.Select(x => x.ToString()));
        
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="i2cBus">I2C Bus</param>
+        /// <param name="id">ID</param>
+        /// <param name="name">Name</param>
+        /// <param name="isImperial">Use imperical units</param>
         protected I2cSensor(I2cBus i2cBus, int id, string name, bool isImperial) : base(i2cBus, id, name)
         {
             this.IsImperial = isImperial;
         }
 
+        /// <inheritdoc />
         public override void Init()
         {
+            //nothing other then base 
+
             base.Init();            
         }
 
+        /// <inheritdoc />
         public abstract bool FetchState();
 
         /// <summary>
@@ -80,14 +91,14 @@ namespace ThingsLibrary.Device.I2c.Base
         /// </summary>
         private void ScheduleNextRead()
         {
-            this.NextReadOn = DateTime.UtcNow.AddMilliseconds(this.ReadInterval);
+            this.NextReadOn = DateTimeOffset.UtcNow.AddMilliseconds(this.ReadInterval);
         }
 
 
         private long ScaleValue(double value, byte precision)
         {
             // Scale the value by 10 raised to the power of precision
-            double scaledValue = value * SMath.Pow(10, precision);
+            var scaledValue = value * SMath.Pow(10, precision);
                         
             // Round the result to the nearest whole number and cast it to long
             return (long)SMath.Round(scaledValue);

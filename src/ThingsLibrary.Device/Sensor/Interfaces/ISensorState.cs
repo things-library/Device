@@ -40,7 +40,7 @@
         /// <summary>
         /// Last time a fetch occured regardless of the state actually changing
         /// </summary>
-        public DateTimeOffset? UpdatedOn { get; }
+        public DateTimeOffset UpdatedOn { get; }
 
 
         // ================================================================================
