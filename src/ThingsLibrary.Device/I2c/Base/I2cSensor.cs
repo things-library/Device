@@ -1,19 +1,17 @@
 ﻿using ThingsLibrary.DataType.Events;
-using ThingsLibrary.Device.Sensor.Interfaces;
+
 using SMath = System.Math;
 
 namespace ThingsLibrary.Device.I2c.Base
 {
-    public abstract class I2cSensor : I2cBase
+    public abstract class I2cSensor : I2cBase, ISensor
     {
         #region --- Events ---
-
-        public delegate void StateChangedEventHandler(object sender, List<ISensorState> states);
 
         /// <summary>
         /// Event when the state changes
         /// </summary>
-        public StateChangedEventHandler StateChanged { get; set; }
+        public ISensor.StatesChangedEventHandler StatesChanged { get; set; }
 
         #endregion
         
@@ -38,7 +36,12 @@ namespace ThingsLibrary.Device.I2c.Base
         public DateTimeOffset NextReadOn { get; set; } = DateTimeOffset.UtcNow; // until told otherwise
 
         /// <summary>
-        /// Last time the sensor was read.
+        /// Keep track of the last time a state actually changed
+        /// </summary>
+        public DateTimeOffset LastStateChanged { get; set; } = DateTimeOffset.UtcNow;
+
+        /// <summary>
+        /// Last time the sensor fetched / updated
         /// </summary>        
         public DateTimeOffset UpdatedOn 
         {
@@ -50,9 +53,10 @@ namespace ThingsLibrary.Device.I2c.Base
             }
         }
         private DateTimeOffset _updatedOn;
+
         
         /// <summary>
-        /// If the output should be in metric units
+        /// If the output should be in imperical units
         /// </summary>
         public bool IsImperial { get; internal set; }
                 
@@ -60,7 +64,7 @@ namespace ThingsLibrary.Device.I2c.Base
         /// Any Error that has occured initalizing or reading from the sensor
         /// </summary>
         public string ErrorMessage { get; internal set; }
-
+        
         public override string ToString() => String.Join(", ", this.States.Select(x => x.ToString()));
        
         /// <summary>
@@ -84,7 +88,7 @@ namespace ThingsLibrary.Device.I2c.Base
         }
 
         /// <inheritdoc />
-        public abstract bool FetchState();
+        public abstract bool FetchStates();
 
         /// <summary>
         /// Figure out when the next read event should happen

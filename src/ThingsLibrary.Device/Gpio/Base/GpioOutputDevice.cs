@@ -30,6 +30,34 @@
         }
 
         /// <summary>
+        /// Set the device to high state
+        /// </summary>
+        public virtual void High()
+        {
+            if (!this.IsEnabled) { return; }
+            if (this.State == PinValue.High) { return; } //already set
+
+            this.Controller.Write(this.Id, PinValue.High);
+
+            // get the state off the pin
+            this.State = this.Controller.Read(this.Id);
+        }
+
+        /// <summary>
+        /// Set the device to the low state
+        /// </summary>
+        public virtual void Low()
+        {
+            if (!this.IsEnabled) { return; }
+            if (this.State == PinValue.Low) { return; } //already set
+
+            this.Controller.Write(this.Id, PinValue.Low);
+
+            // get the state off the pin
+            this.State = this.Controller.Read(this.Id);
+        }
+
+        /// <summary>
         /// Turn on the output
         /// </summary>
         public void On()

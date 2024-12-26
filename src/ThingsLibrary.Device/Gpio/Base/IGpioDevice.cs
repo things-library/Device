@@ -24,22 +24,12 @@
         /// Set the state
         /// </summary>
         public PinValue State { get; }
-       
+
         /// <summary>
-        /// When the state last changed
+        /// Last time the state changed
         /// </summary>
         public DateTimeOffset StateChangedOn { get; }
 
-        /// <summary>
-        /// How long was the last state before this one
-        /// </summary>
-        public TimeSpan LastStateDuration { get; }
-
-        /// <summary>
-        /// Keep track anytime we have pulled the state even if it hasn't changed
-        /// </summary>
-        public DateTimeOffset UpdatedOn { get; }
-                
         /// <summary>
         /// If the device is currently enabled
         /// </summary>
@@ -54,11 +44,5 @@
         /// Is State Low
         /// </summary>
         public bool IsLow { get; }
-
-
-        /// <summary>
-        /// How long has it been the current state
-        /// </summary>
-        public TimeSpan StateDuration();
     }
 }

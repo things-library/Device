@@ -2,18 +2,8 @@
 
 namespace ThingsLibrary.Device.Gpio.Base
 {
-    public class GpioInputDevice : GpioBase, ISensorStates
+    public class GpioInputDevice : GpioBase
     {
-        #region --- Events --- 
-
-        private void ValueChanged(object sender, PinValueChangedEventArgs e)
-        {
-            // update the state            
-            this.State = (e.ChangeType == PinEventTypes.Rising ? PinValue.High : PinValue.Low);            
-        }
-
-        #endregion
-
         /// <summary>
         /// If a pullup resistor should be used
         /// </summary>
@@ -24,10 +14,6 @@ namespace ThingsLibrary.Device.Gpio.Base
         /// </summary>
         public bool IsPullDown { get; set; }
 
-        /// <summary>
-        /// Collection of States
-        /// </summary>
-        public List<ISensorState> States { get; set; } = new List<ISensorState>();
 
         /// <summary>
         /// Constructor
@@ -43,10 +29,7 @@ namespace ThingsLibrary.Device.Gpio.Base
             {
                 this.IsPullUp = isPullUp.Value;
                 this.IsPullDown = !isPullUp.Value;
-            }
-
-            // States            
-            this.States = new List<ISensorState>(1) { { this.BoolState } };
+            }            
         }
 
         /// <summary>
@@ -68,17 +51,9 @@ namespace ThingsLibrary.Device.Gpio.Base
             //init the pin            
             this.Controller.OpenPin(this.Id, pinMode);
             
-            // try to hook up the event callbacks for state changes
-            try
-            {
-                this.Controller.RegisterCallbackForPinValueChangedEvent(this.Id, PinEventTypes.None, this.ValueChanged);
-            }
-            catch(NotImplementedException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
             this.IsEnabled = enableDevice;
         }
+
+        public void Init() => this.Init(true);        
     }
 }

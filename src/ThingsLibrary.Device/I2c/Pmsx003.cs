@@ -140,7 +140,7 @@ namespace ThingsLibrary.Device.I2c
             }
         }
 
-        public override bool FetchState()
+        public override bool FetchStates()
         {
             if (!this.IsEnabled) { return false; }
             if (DateTimeOffset.UtcNow < this.NextReadOn) { return false; }
@@ -168,7 +168,7 @@ namespace ThingsLibrary.Device.I2c
                 this.Particles100.Update(readResult.Particles100, this.UpdatedOn);
 
                 // see if anyone is listening
-                this.StateChanged?.Invoke(this, this.States);
+                this.StatesChanged?.Invoke(this, this.States);
 
                 // if we get here the state has changed
                 return true;

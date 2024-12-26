@@ -1,6 +1,4 @@
-﻿using ThingsLibrary.Device.Sensor.Events;
-
-namespace ThingsLibrary.Device.Sensor.State
+﻿namespace ThingsLibrary.Device.Sensor.State
 {        
     /// <summary>
     /// Basic boolean state for keeping track of two states.
@@ -11,42 +9,42 @@ namespace ThingsLibrary.Device.Sensor.State
         /// <summary>
         /// Current State
         /// </summary>
-        public bool IsOn => (this.CurrentState != 0);
+        public bool IsFaulted => (this.CurrentState != 0);
 
         /// <summary>
         /// Label for the normal / off state
         /// </summary>
-        public string OffLabel { get; private set; } = "Off";
+        public string NormalLabel { get; private set; } = "Off";
 
         /// <summary>
         /// Label for the faulted / on state
         /// </summary>
-        public string OnLabel { get; private set; } = "On";
+        public string FaultedLabel { get; private set; } = "On";
                 
         /// <summary>
         /// Last State pretty label
         /// </summary>
-        public string LastStateLabel => (this.IsOn ? this.OffLabel : this.OnLabel);
+        public string LastStateLabel => (this.IsFaulted ? this.NormalLabel : this.FaultedLabel);
 
         /// <summary>
         /// State Label to show the user
         /// </summary>
-        public string StateLabel => (this.IsOn ? this.OnLabel : this.OffLabel);
+        public string StateLabel => (this.IsFaulted ? this.FaultedLabel : this.NormalLabel);
                 
 
         /// <inheritdoc />
-        public void Update(bool isOn, DateTimeOffset updatedOn)
+        public void Update(bool isFaulted, DateTimeOffset updatedOn)
         {
             this.UpdatedOn = updatedOn;
 
             // is the state changing?
-            if (isOn != this.IsOn)
+            if (isFaulted != this.IsFaulted)
             {
                 //capture the duration of the previous state since we know we are changing
-                this.LastState = (this.IsOn ? 1 : 0); // we haven't changed it yet
+                this.LastState = (this.IsFaulted ? 1 : 0); // we haven't changed it yet
                 this.LastStateDuration = this.StateDuration(updatedOn);
 
-                this.CurrentState = (this.IsOn ? 1 : 0);
+                this.CurrentState = (this.IsFaulted ? 1 : 0);
                 this.StateChangedOn = updatedOn;
 
                 // did the state change during this process?
@@ -64,12 +62,12 @@ namespace ThingsLibrary.Device.Sensor.State
         /// </summary>
         /// <param name="id">ID</param>
         /// <param name="key">Key</param>
-        /// <param name="offLabel">Display label when Off</param>
-        /// <param name="onLabel">Display label when on</param>
-        public BoolState(string id = "Switch", string key = "sw", string offLabel = "Off", string onLabel = "On") : base(id, key, false)
+        /// <param name="normalLabel">Display label when in the normal state</param>
+        /// <param name="faultedLabel">Display label when faulted state</param>
+        public BoolState(string id = "Switch", string key = "sw", string normalLabel = "Off", string faultedLabel = "On") : base(id, key, false)
         {
-            this.OffLabel = offLabel;
-            this.OnLabel = onLabel;
+            this.NormalLabel = normalLabel;
+            this.FaultedLabel = faultedLabel;
 
             // make sure 
             var updatedOn = DateTimeOffset.UtcNow;

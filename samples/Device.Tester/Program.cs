@@ -1,17 +1,16 @@
-﻿using Iot.Device.Ft232H;
+﻿using System.Device.Gpio;
+using System.Device.I2c;
+
+using Iot.Device.Ft232H;
 using Iot.Device.Board;
 
 using Ft = Iot.Device.FtCommon;
 
-using ThingsLibrary.Device.I2c;
-using System.Device.Gpio;
-using System.Device.I2c;
-
-using ThingsLibrary.Device.Gpio;
-using ThingsLibrary.Device.I2c.Base;
 using ThingsLibrary.DataType.Extensions;
+using ThingsLibrary.Device.Gpio;
+using ThingsLibrary.Device.I2c;
+using ThingsLibrary.Device.I2c.Base;
 using ThingsLibrary.Device.Sensor.Events;
-using System.Runtime.CompilerServices;
 
 namespace Device.Tester
 {
@@ -44,11 +43,11 @@ namespace Device.Tester
             // pick just the first one
             var ftDevice = new Ft232HDevice(devices.First());
 
-            var gpioController = ftDevice.CreateGpioController();
-            GpioTests(gpioController);
+            //var gpioController = ftDevice.CreateGpioController();
+            //GpioTests(gpioController);
 
-            //var i2cBus = ftDevice.CreateOrGetI2cBus(0);
-            //I2cTests(i2cBus);
+            var i2cBus = ftDevice.CreateOrGetI2cBus(0);
+            I2cTests(i2cBus);
         }
 
         public static void GpioTests(GpioController gpioController)
@@ -81,7 +80,7 @@ namespace Device.Tester
                         continue;
                     }
 
-                    sensor.FetchState();
+                    sensor.FetchStates();
 
                     Log.Information($"{sensor.Name}: {sensor.StateStr} ({sensor.BoolState.StateDuration().ToHHMMSS()})");
                 }
@@ -130,12 +129,13 @@ namespace Device.Tester
             // - 0x44 - SHT41 (T,H)
             // - 0x76 - BMP280 (T,P)
 
+
             var sensors = new List<I2cSensor>();
-            sensors.Add(new Bme680Sensor(i2cBus, 0x76, "BME680", true));
-            sensors.Add(new Scd40Sensor(i2cBus, 0x62));
-            sensors.Add(new Bmp280Sensor(i2cBus, 0x77));
-            sensors.Add(new Sht4xSensor(i2cBus, 0x44));
-            sensors.Add(new Vl53l0xSensor(i2cBus, 0x29));
+            //sensors.Add(new Bme680Sensor(i2cBus, 0x76, "BME680", true));
+            //sensors.Add(new Scd40Sensor(i2cBus, 0x62));
+            //sensors.Add(new Bmp280Sensor(i2cBus, 0x77));
+            //sensors.Add(new Sht4xSensor(i2cBus, 0x44));
+            //sensors.Add(new Vl53l1xSensor(i2cBus, 0x29));
             //sensors.Add(new Pmsx003Sensor(i2cBus));
             //sensors.Add(new Sen5xSensor(i2cBus));
 
@@ -164,17 +164,17 @@ namespace Device.Tester
             while (true)            
             {
                 foreach (var sensor in sensors)
-                {
+                {                    
                     if (!sensor.IsEnabled) { continue; }
 
-                    if (sensor.FetchState())
+                    if (sensor.FetchStates())
                     {
                         //Log.Information($"{sensor.Name}:");
                         Log.Information(sensor.ToTelemetryString());                        
                     }
                 }
 
-                Thread.Sleep(4000);
+                Thread.Sleep(1000);
             }
         }
     }

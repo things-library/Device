@@ -25,3 +25,4 @@ global using UnitsNet;
 // ======================================================================
 global using ThingsLibrary.Device.Sensor;
 global using ThingsLibrary.Device.Sensor.State;
+global using ThingsLibrary.Device.Sensor.Interfaces;

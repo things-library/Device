@@ -55,7 +55,7 @@ namespace ThingsLibrary.Device.I2c
             }
         }
 
-        public override bool FetchState()
+        public override bool FetchStates()
         {
             if (!this.IsEnabled) { return false; }
             if (DateTimeOffset.UtcNow < this.NextReadOn) { return false; }
@@ -109,7 +109,7 @@ namespace ThingsLibrary.Device.I2c
                 if (isStateChanged)
                 {
                     this.UpdatedOn = updatedOn;
-                    this.StateChanged?.Invoke(this, this.States);
+                    this.StatesChanged?.Invoke(this, this.States);
                 }
 
                 return isStateChanged;
