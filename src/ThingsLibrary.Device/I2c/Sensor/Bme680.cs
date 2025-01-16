@@ -3,12 +3,12 @@ using ThingsLibrary.Device.Sensor.Interfaces;
 
 // https://learn.adafruit.com/adafruit-bme680-humidity-temperature-barometic-pressure-voc-gas
 
-namespace ThingsLibrary.Device.I2c
+namespace ThingsLibrary.Device.I2c.Sensor
 {
     public class Bme680Sensor : Base.I2cSensor
     {
         public Bme680 Device { get; set; }
-                
+
         public TemperatureState TemperatureState { get; init; }
         public HumidityState HumidityState { get; init; }
         public PressureState PressureState { get; init; }
@@ -115,7 +115,7 @@ namespace ThingsLibrary.Device.I2c
 
                 return isStateChanged;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.ErrorMessage = ex.Message;
                 return false;

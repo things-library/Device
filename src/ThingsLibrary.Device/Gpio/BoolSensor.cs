@@ -48,7 +48,7 @@
         public DateTimeOffset LastStateChanged => this.BoolState.StateChangedOn;
 
         /// <inheritdoc />        
-        public DateTimeOffset StateChangedOn => this.BoolState.StateChangedOn;
+        //public DateTimeOffset StateChangedOn => this.BoolState.StateChangedOn;
 
         /// <inheritdoc />        
         public TimeSpan StateDuration() => this.BoolState.StateDuration();  //technically calculated but basically a property

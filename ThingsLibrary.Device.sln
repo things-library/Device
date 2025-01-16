@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iot.Device.Pmsx003", "src\I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iot.Device.Sen5x", "src\Iot.Device.Sen5x\Iot.Device.Sen5x.csproj", "{33CEC96D-C30A-48FC-BB8A-6235BC897D4B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iot.Device.S3km1110", "src\Iot.Device.S3km1110\Iot.Device.S3km1110.csproj", "{57E9896E-A57D-4295-9929-71204FD5CBCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{33CEC96D-C30A-48FC-BB8A-6235BC897D4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33CEC96D-C30A-48FC-BB8A-6235BC897D4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33CEC96D-C30A-48FC-BB8A-6235BC897D4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57E9896E-A57D-4295-9929-71204FD5CBCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57E9896E-A57D-4295-9929-71204FD5CBCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57E9896E-A57D-4295-9929-71204FD5CBCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57E9896E-A57D-4295-9929-71204FD5CBCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{D6F150FE-6D70-4CE6-9E75-88D41C74180D} = {438CF8FF-D1D1-4B76-8461-9F6192F98DEC}
 		{2BD9DF50-4E02-4293-92CA-0DDFEA2BC4E8} = {438CF8FF-D1D1-4B76-8461-9F6192F98DEC}
 		{33CEC96D-C30A-48FC-BB8A-6235BC897D4B} = {438CF8FF-D1D1-4B76-8461-9F6192F98DEC}
+		{57E9896E-A57D-4295-9929-71204FD5CBCA} = {438CF8FF-D1D1-4B76-8461-9F6192F98DEC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F16E4DF-9BE6-47DE-B11C-84A38FBEC050}

@@ -1,7 +1,7 @@
 ﻿using Iot.Device.Scd4x;
 using ThingsLibrary.Device.Sensor.Interfaces;
 
-namespace ThingsLibrary.Device.I2c
+namespace ThingsLibrary.Device.I2c.Sensor
 {
     public class Scd40Sensor : Base.I2cSensor
     {

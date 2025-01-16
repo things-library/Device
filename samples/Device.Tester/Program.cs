@@ -11,6 +11,7 @@ using ThingsLibrary.Device.Gpio;
 using ThingsLibrary.Device.I2c;
 using ThingsLibrary.Device.I2c.Base;
 using ThingsLibrary.Device.Sensor.Events;
+using Iot.Device.Mcp23xxx;
 
 namespace Device.Tester
 {
@@ -47,7 +48,9 @@ namespace Device.Tester
             //GpioTests(gpioController);
 
             var i2cBus = ftDevice.CreateOrGetI2cBus(0);
-            I2cTests(i2cBus);
+            McpTests(i2cBus);
+            
+            //I2cTests(i2cBus);
         }
 
         public static void GpioTests(GpioController gpioController)
@@ -104,6 +107,129 @@ namespace Device.Tester
             }
         }
 
+        public static void SwitchTests(Mcp230xx mcp)
+        {
+            // set up the input/output modes
+            mcp.Device.WriteByte(Register.IODIR, 0b1111_1111, Port.PortA); // Switch Matrix            
+            mcp.Device.WriteByte(Register.GPPU, 0b1111_1111, Port.PortA); // pullups
+
+            byte value;
+            while (true)
+            {
+                value = mcp.Device.ReadByte(Register.GPIO, Port.PortA);
+
+                Console.WriteLine($"B:{Convert.ToString(value, 2)}");
+                Thread.Sleep(500);
+            }
+        }
+
+        public static void LedTests(Mcp230xx mcp)
+        {
+            // set up the input/output modes
+            mcp.Device.WriteByte(Register.IODIR, 0b0000_0000, Port.PortA); // Switch Matrix            
+            mcp.Device.WriteByte(Register.IODIR, 0b000_0000, Port.PortB); // LEDs
+            mcp.Device.WriteByte(Register.GPPU, 0b0000_0000, Port.PortB); // pullups
+
+            for (byte i = 1; i <= 6; i++)
+            {
+                ShowSelection(mcp.Device, i);
+                Thread.Sleep(200);
+            }
+
+            for (byte i = 6; i > 0; i--)
+            {
+                ShowSelection(mcp.Device, i);
+                Thread.Sleep(200);
+            }
+            
+            // COLS
+            mcp.Device.WriteByte(Register.GPIO, 0b0000_1001, Port.PortB);
+            Thread.Sleep(400);
+            mcp.Device.WriteByte(Register.GPIO, 0b0001_0010, Port.PortB);
+            Thread.Sleep(400);
+            mcp.Device.WriteByte(Register.GPIO, 0b0010_0100, Port.PortB);
+            Thread.Sleep(400);
+            mcp.Device.WriteByte(Register.GPIO, 0b0001_0010, Port.PortB);
+            Thread.Sleep(400);
+            mcp.Device.WriteByte(Register.GPIO, 0b0000_1001, Port.PortB);
+            Thread.Sleep(400);
+
+            // ROWS
+            mcp.Device.WriteByte(Register.GPIO, 0b0000_0111, Port.PortB);
+            Thread.Sleep(400);
+            mcp.Device.WriteByte(Register.GPIO, 0b0011_1000, Port.PortB);
+            Thread.Sleep(400);
+            mcp.Device.WriteByte(Register.GPIO, 0b0000_0111, Port.PortB);
+            Thread.Sleep(400);
+
+            mcp.Device.WriteByte(Register.GPIO, 0b1111_1111, Port.PortB);
+            Thread.Sleep(1000);
+            mcp.Device.WriteByte(Register.GPIO, 0b0000_0000, Port.PortB);
+            Thread.Sleep(500);
+        }
+
+        public static void McpTests(I2cBus i2cBus)
+        {
+            var mcp = new Mcp230xx(i2cBus, 0x27);
+            mcp.Init();
+
+            //// set up the input/output modes
+            //mcp.Device.WriteByte(Register.IODIR, 0b0000_0000, Port.PortA); // Switch Matrix            
+            //mcp.Device.WriteByte(Register.IODIR, 0b1111_1111, Port.PortB); // LEDs
+            //mcp.Device.WriteByte(Register.GPPU, 0b1111_1111, Port.PortB); // pullups
+
+            ////mcp.Device.WriteByte(Register.GPIO, 0b1111_0000, Port.PortB);
+
+            //byte value;
+            //while (true)
+            //{
+            //    value = mcp.Device.ReadByte(Register.GPIO, Port.PortB);
+
+            //    Console.WriteLine($"B:{Convert.ToString(value, 2)}");
+            //    Thread.Sleep(500);
+            //}
+
+
+            //SwitchTests(mcp);
+
+            while (true)
+            {
+                LedTests(mcp);
+            }
+        }        
+
+       
+
+        //public static void ShowSelection(Mcp23017 mcp)
+        //{
+        //    mcp.WriteByte(Register.GPIO, 0b0000_0000, Port.PortB);
+
+
+        //    byte result = 0;
+        //    result |= (byte)(bool1 ? 1 << 0 : 0);
+        //    result |= (byte)(bool2 ? 1 << 1 : 0);
+        //    result |= (byte)(bool3 ? 1 << 2 : 0);
+        //    result |= (byte)(bool4 ? 1 << 3 : 0);
+        //    result |= (byte)(bool5 ? 1 << 4 : 0);
+        //    result |= (byte)(bool6 ? 1 << 5 : 0);
+        //    result |= (byte)(bool7 ? 1 << 6 : 0);
+        //    result |= (byte)(bool8 ? 1 << 7 : 0);
+
+        //    mcp.WriteByte(Register.GPIO, 0b0000_0000, Port.PortB);
+        //}
+
+
+        public static void ShowSelection(Mcp23017 mcp, byte id)
+        {            
+            mcp.WriteByte(Register.GPIO, (byte)(1 << (byte)(id - 1)), Port.PortB);
+        }
+
+        public static void ShowRow(byte row)
+        {
+            
+        }
+
+
         public static void I2cTests(I2cBus i2cBus) 
         {         
             // Bus scan to show that the device(s) are plugged in and seen
@@ -128,17 +254,19 @@ namespace Device.Tester
             // M5 ENV IV Sensor
             // - 0x44 - SHT41 (T,H)
             // - 0x76 - BMP280 (T,P)
-
+            
 
             var sensors = new List<I2cSensor>();
             //sensors.Add(new Bme680Sensor(i2cBus, 0x76, "BME680", true));
             //sensors.Add(new Scd40Sensor(i2cBus, 0x62));
             //sensors.Add(new Bmp280Sensor(i2cBus, 0x77));
             //sensors.Add(new Sht4xSensor(i2cBus, 0x44));
-            //sensors.Add(new Vl53l1xSensor(i2cBus, 0x29));
+            //sensors.Add(new Vl53l0xSensor(i2cBus));
+            //sensors.Add(new Vl53l1xSensor(i2cBus));
+            
             //sensors.Add(new Pmsx003Sensor(i2cBus));
             //sensors.Add(new Sen5xSensor(i2cBus));
-
+                        
             // M5 ENV IV Sensor Module
             //sensors.Add(new Sht4xSensor(i2cBus, 0x44, "SHT41", true));
             //sensors.Add(new Bmp280Sensor(i2cBus, 0x76, "BMP280", true));

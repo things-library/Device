@@ -1,7 +1,7 @@
 ﻿using Iot.Device.Sen5x;
 using ThingsLibrary.Device.Sensor.Interfaces;
 
-namespace ThingsLibrary.Device.I2c
+namespace ThingsLibrary.Device.I2c.Sensor
 {
     public class Sen5xSensor : Base.I2cSensor
     {

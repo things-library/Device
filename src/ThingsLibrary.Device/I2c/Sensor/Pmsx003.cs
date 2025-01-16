@@ -1,7 +1,7 @@
 ﻿using Iot.Device.Pmsx003;
 using ThingsLibrary.Device.Sensor.Interfaces;
 
-namespace ThingsLibrary.Device.I2c
+namespace ThingsLibrary.Device.I2c.Sensor
 {
     //https://learn.adafruit.com/pmsa003i
 
@@ -17,7 +17,7 @@ namespace ThingsLibrary.Device.I2c
         /// Direct Device Object
         /// </summary>
         public Pmsx003 Device { get; set; }
-                
+
         /// <summary>
         /// PM1.0 concentration unit: µg/𝑚3 (standard particle)
         /// </summary>
@@ -127,7 +127,7 @@ namespace ThingsLibrary.Device.I2c
 
                 //this.MinReadInterval = (int)Scd4x.MeasurementPeriod.TotalMilliseconds;
                 //if (this.ReadInterval < this.MinReadInterval) { throw new ArgumentException($"Read interval '{this.ReadInterval} ms' can not be less then min read interval '{this.MinReadInterval} ms' of sensor."); }
-                       
+
 
                 //TODO:
 
@@ -178,6 +178,6 @@ namespace ThingsLibrary.Device.I2c
                 this.ErrorMessage = ex.Message;
                 return false;
             }
-        }     
-    }    
+        }
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 
 using Iot.Device.Vl53L0X;
+using ThingsLibrary.Device.I2c.Sensor;
 
 namespace ThingsLibrary.Device.I2c
 {

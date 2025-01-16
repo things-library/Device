@@ -1,22 +1,22 @@
-﻿using Iot.Device.Vl53L0X;
-using ThingsLibrary.Device.Sensor.Interfaces;
+﻿using Iot.Device.Vl53L1X;
 
-// https://learn.adafruit.com/adafruit-vl53l0x-micro-lidar-distance-sensor-breakout
+// 
 
-namespace ThingsLibrary.Device.I2c
+namespace ThingsLibrary.Device.I2c.Sensor
 {
     /// <summary>
     /// Laser distance time of flight ToF sensor
     /// </summary>
-    public class Vl53l0xSensor : Base.I2cSensor
+    /// <seealso cref="https://learn.adafruit.com/adafruit-vl53l0x-micro-lidar-distance-sensor-breakout" />
+    public class Vl53l1xSensor : Base.I2cSensor
     {
-        public Vl53L0X Device { get; set; }
+        public Vl53L1X Device { get; set; }
 
         /// <summary>
         /// If reassigning the device ID during initilization
         /// </summary>
         public int NewDeviceId { get; set; } = -1;  // -1 = not assigned
-                
+
         /// <summary>
         /// Shutdown Pin, when pulled low the sensor goes into shutdown mode.
         /// </summary>
@@ -34,8 +34,8 @@ namespace ThingsLibrary.Device.I2c
 
         /// <inheritdoc/>
         /// <remarks>0x77 is default</remarks>
-        public Vl53l0xSensor(I2cBus i2cBus, int id = 0x29, string name = "vl5310x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
-        {            
+        public Vl53l1xSensor(I2cBus i2cBus, int id = 0x29, string name = "vl5311x", bool isImperial = false) : base(i2cBus, id, name, isImperial)
+        {
             // States
             this.States = new List<ISensorState>()
             {
@@ -54,18 +54,18 @@ namespace ThingsLibrary.Device.I2c
                 {
                     //TODO: shutdown all other sensors that we know about using the shutdown pins
 
-                    Vl53L0X.ChangeI2cAddress(this.I2cDevice, (byte)this.NewDeviceId);
+                    Vl53L1X.ChangeI2CAddress(this.I2cDevice, (byte)this.NewDeviceId);
                     this.I2cDevice = this.I2cBus.CreateDevice(this.NewDeviceId);
                 }
 
-                this.Device = new Vl53L0X(this.I2cDevice)
+                this.Device = new Vl53L1X(this.I2cDevice)
                 {
-                    Precision = Precision.ShortRange,
-                    MeasurementMode = MeasurementMode.Continuous
+                    Precision = Precision.Short,
+                    Roi = new Roi(4, 4)
                 };
 
-                this.Device.StartContinuousMeasurement(10);
-                                
+                //this.Device.StartContinuousMeasurement(10);
+
                 // we must enable for this device to work at all.
                 this.IsEnabled = true;
             }
@@ -82,14 +82,13 @@ namespace ThingsLibrary.Device.I2c
 
             try
             {
-                var distance = this.Device.Distance;
-                if (distance >= (ushort)OperationRange.Maximum) { return false; }
+                var distance = this.Device.GetDistance();
+                //    if (distance >= (ushort)OperationRange.Maximum) { return false; }
 
                 var updatedOn = DateTime.UtcNow;
 
-                // DISTANCE
-                var lengthUnits = Length.FromMillimeters(distance);
-                this.DistanceState.Update(lengthUnits, updatedOn);
+                // DISTANCE            
+                this.DistanceState.Update(distance, updatedOn);
 
                 // see if anyone is listening
                 this.UpdatedOn = updatedOn;
@@ -98,7 +97,7 @@ namespace ThingsLibrary.Device.I2c
                 // there is always a new reading
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.ErrorMessage = ex.Message;
 

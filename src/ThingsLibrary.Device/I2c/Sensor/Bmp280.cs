@@ -5,12 +5,12 @@ using ThingsLibrary.Device.Sensor.Interfaces;
 // https://docs.microsoft.com/en-us/dotnet/iot/tutorials/temp-sensor
 // https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout
 
-namespace ThingsLibrary.Device.I2c
+namespace ThingsLibrary.Device.I2c.Sensor
 {
     public class Bmp280Sensor : Base.I2cSensor
     {
         public Bmp280 Device { get; set; }
-                
+
         public TemperatureState TemperatureState { get; init; }
         public PressureState PressureState { get; init; }
         public LengthState AltitudeState { get; init; }
