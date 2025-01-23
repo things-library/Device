@@ -44,14 +44,60 @@ namespace Device.Tester
             // pick just the first one
             var ftDevice = new Ft232HDevice(devices.First());
 
-            //var gpioController = ftDevice.CreateGpioController();
+            var gpioController = ftDevice.CreateGpioController();
             //GpioTests(gpioController);
 
             var i2cBus = ftDevice.CreateOrGetI2cBus(0);
-            McpTests(i2cBus);
+            I2cBusScan(i2cBus);
+
+            McpTests(i2cBus, gpioController);
             
             //I2cTests(i2cBus);
         }
+
+        public static void I2cBusScan(I2cBus i2cBus)
+        {
+            var results = i2cBus.PerformBusScan();
+
+            //    0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+            //00: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+            //10: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+            //20: 20 21 22 23 24 25 26 27 -  -  -  -  -  -  -  -
+            //30: 30 31 32 33 34 35 36 37 38 39 3a 3b 3c 3d 3e 3f
+            //40: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+            //50: -  51 -  -  -  -  -  -  -  -  -  -  -  -  5d -
+            //60: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+            //70: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+            Console.WriteLine("====================================================");
+            Console.WriteLine(" I2C BUS SCAN");
+            Console.WriteLine("====================================================");
+            Console.WriteLine("     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f");
+
+            for (int startingRowAddress = 0; startingRowAddress < 128; startingRowAddress += 16)
+            {
+                Console.Write($"{startingRowAddress:x2}: ");  // Beginning of row.
+
+                for (int rowAddress = 0; rowAddress < 16; rowAddress++)
+                {
+                    int deviceAddress = startingRowAddress + rowAddress;
+
+                    if (results.Contains(deviceAddress))
+                    {
+                        Console.Write($"{deviceAddress:x2} ");
+                    }
+                    else
+                    {
+                        Console.Write("-- ");
+                    }
+
+                }
+
+                Console.WriteLine("");
+            }
+            Console.WriteLine("====================================================");
+        }
+
 
         public static void GpioTests(GpioController gpioController)
         {
@@ -107,71 +153,81 @@ namespace Device.Tester
             }
         }
 
-        public static void SwitchTests(Mcp230xx mcp)
-        {
-            // set up the input/output modes
-            mcp.Device.WriteByte(Register.IODIR, 0b1111_1111, Port.PortA); // Switch Matrix            
-            mcp.Device.WriteByte(Register.GPPU, 0b1111_1111, Port.PortA); // pullups
+        //public static void SwitchTests(Mcp230xx mcp)
+        //{
+        //    // set up the input/output modes
+        //    mcp.Device.WriteByte(Register.IODIR, 0b1111_1111, Port.PortA); // Switch Matrix            
+        //    mcp.Device.WriteByte(Register.GPPU, 0b1111_1111, Port.PortA); // pullups
 
-            byte value;
-            while (true)
-            {
-                value = mcp.Device.ReadByte(Register.GPIO, Port.PortA);
+        //    byte value;
+        //    while (true)
+        //    {
+        //        value = mcp.Device.ReadByte(Register.GPIO, Port.PortA);
 
-                Console.WriteLine($"B:{Convert.ToString(value, 2)}");
-                Thread.Sleep(500);
-            }
-        }
+        //        Console.WriteLine($"B:{Convert.ToString(value, 2)}");
+        //        Thread.Sleep(500);
+        //    }
+        //}
 
-        public static void LedTests(Mcp230xx mcp)
-        {
-            // set up the input/output modes
-            mcp.Device.WriteByte(Register.IODIR, 0b0000_0000, Port.PortA); // Switch Matrix            
-            mcp.Device.WriteByte(Register.IODIR, 0b000_0000, Port.PortB); // LEDs
-            mcp.Device.WriteByte(Register.GPPU, 0b0000_0000, Port.PortB); // pullups
+        //public static void LedTests(Mcp23s17 mcp)
+        //{
+        //    // set up the input/output modes
+        //    mcp.Device.WriteByte(Register.IODIR, 0b0000_0000, Port.PortA); // Switch Matrix            
+        //    mcp.Device.WriteByte(Register.IODIR, 0b000_0000, Port.PortB); // LEDs
+        //    mcp.Device.WriteByte(Register.GPPU, 0b0000_0000, Port.PortB); // pullups
 
-            for (byte i = 1; i <= 6; i++)
-            {
-                ShowSelection(mcp.Device, i);
-                Thread.Sleep(200);
-            }
+        //    for (byte i = 1; i <= 6; i++)
+        //    {
+        //        ShowSelection(mcp.Device, i);
+        //        Thread.Sleep(200);
+        //    }
 
-            for (byte i = 6; i > 0; i--)
-            {
-                ShowSelection(mcp.Device, i);
-                Thread.Sleep(200);
-            }
+        //    for (byte i = 6; i > 0; i--)
+        //    {
+        //        ShowSelection(mcp.Device, i);
+        //        Thread.Sleep(200);
+        //    }
             
-            // COLS
-            mcp.Device.WriteByte(Register.GPIO, 0b0000_1001, Port.PortB);
-            Thread.Sleep(400);
-            mcp.Device.WriteByte(Register.GPIO, 0b0001_0010, Port.PortB);
-            Thread.Sleep(400);
-            mcp.Device.WriteByte(Register.GPIO, 0b0010_0100, Port.PortB);
-            Thread.Sleep(400);
-            mcp.Device.WriteByte(Register.GPIO, 0b0001_0010, Port.PortB);
-            Thread.Sleep(400);
-            mcp.Device.WriteByte(Register.GPIO, 0b0000_1001, Port.PortB);
-            Thread.Sleep(400);
+        //    // COLS
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0000_1001, Port.PortB);
+        //    Thread.Sleep(400);
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0001_0010, Port.PortB);
+        //    Thread.Sleep(400);
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0010_0100, Port.PortB);
+        //    Thread.Sleep(400);
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0001_0010, Port.PortB);
+        //    Thread.Sleep(400);
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0000_1001, Port.PortB);
+        //    Thread.Sleep(400);
 
-            // ROWS
-            mcp.Device.WriteByte(Register.GPIO, 0b0000_0111, Port.PortB);
-            Thread.Sleep(400);
-            mcp.Device.WriteByte(Register.GPIO, 0b0011_1000, Port.PortB);
-            Thread.Sleep(400);
-            mcp.Device.WriteByte(Register.GPIO, 0b0000_0111, Port.PortB);
-            Thread.Sleep(400);
+        //    // ROWS
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0000_0111, Port.PortB);
+        //    Thread.Sleep(400);
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0011_1000, Port.PortB);
+        //    Thread.Sleep(400);
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0000_0111, Port.PortB);
+        //    Thread.Sleep(400);
 
-            mcp.Device.WriteByte(Register.GPIO, 0b1111_1111, Port.PortB);
-            Thread.Sleep(1000);
-            mcp.Device.WriteByte(Register.GPIO, 0b0000_0000, Port.PortB);
-            Thread.Sleep(500);
-        }
+        //    mcp.Device.WriteByte(Register.GPIO, 0b1111_1111, Port.PortB);
+        //    Thread.Sleep(1000);
+        //    mcp.Device.WriteByte(Register.GPIO, 0b0000_0000, Port.PortB);
+        //    Thread.Sleep(500);
+        //}
 
-        public static void McpTests(I2cBus i2cBus)
+        public static void McpTests(I2cBus i2cBus, GpioController gpioController)
         {
-            var mcp = new Mcp230xx(i2cBus, 0x27);
-            mcp.Init();
+            var interruptPinA = gpioController.OpenPin(4, PinMode.Input);
+            var interruptPinB = gpioController.OpenPin(5, PinMode.Input);
+            
+            var i2cDevice = i2cBus.CreateDevice(0x26);
+            var expander = new GpioExpander(i2cDevice);
+
+            expander.AttachInterrupts(interruptPinA, interruptPinB, true);
+
+            var ledPin = expander.OpenPin(7, PinMode.Output, PinValue.High);
+            var switchPin = expander.OpenPin(15, PinMode.InputPullUp);
+
+            switchPin.ValueChanged += PinValueChanged;
 
             //// set up the input/output modes
             //mcp.Device.WriteByte(Register.IODIR, 0b0000_0000, Port.PortA); // Switch Matrix            
@@ -194,10 +250,16 @@ namespace Device.Tester
 
             while (true)
             {
-                LedTests(mcp);
+                expander.FetchStates();
+                ledPin.Toggle();
+                Thread.Sleep(1000);                
             }
         }        
 
+        public static void PinValueChanged(object sender, PinValueChangedEventArgs e)
+        {
+            Console.WriteLine($"Pin Changed: {e.PinNumber}: {e.ChangeType}");
+        }
        
 
         //public static void ShowSelection(Mcp23017 mcp)

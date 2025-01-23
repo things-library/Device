@@ -2,6 +2,8 @@
 //   sudo apt install i2c-tools
 //   sudo i2cdetect -y 1
 
+using Iot.Device.Board;
+
 namespace ThingsLibrary.Device.I2c.Base
 {
     /// <summary>
@@ -62,6 +64,6 @@ namespace ThingsLibrary.Device.I2c.Base
         public virtual void Init()
         {         
             this.I2cDevice = this.I2cBus.CreateDevice(this.Id);
-        }
+        }        
     }
 }
